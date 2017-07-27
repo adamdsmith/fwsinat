@@ -1,0 +1,18 @@
+language: r
+sudo: required
+cran: http://cran.rstudio.com
+dist: trusty
+cache: packages
+r_binary_packages:
+  - rJava
+  - xlsxjars
+
+r:
+  - release
+  - devel
+  - oldrel
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
