@@ -14,13 +14,13 @@ Imports:
     httr (>= 1.2.1),
     jsonlite (>= 1.5),
     raster (>= 2.5.8),
+    sf (>= 0.5.3),
     xlsx (>= 0.5.7),
     tools,
     utils
 Remotes:
     adamdsmith/itistools,
-    adamdsmith/nwrspp,
-    r-spatial/sf
+    adamdsmith/nwrspp
 License: CC0
 Copyright: This software is in the public domain because it contains materials
     that originally came from the United States Fish & Wildlife Service, an agency
