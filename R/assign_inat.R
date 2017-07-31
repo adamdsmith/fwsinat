@@ -68,11 +68,13 @@ assign_inat <- function(fwsinat, progress = TRUE) {
 
   # Retrieve nearest property for obscured observations...
   no_prop <- no_prop[inat_sf$loc_obscured[no_prop]]
-  message("Retrieving nearest USFWS property for ", length(no_prop),
-          " observations with obscured locational coordinates.")
-  message(n_no_prop - length(no_prop), " observations have been discarded.")
-  near_prop <- nearest_prop(r, inat_sf, no_prop, progress = progress)
-  prop[no_prop] <- near_prop
+  if (length(no_prop) > 0) {
+    message("Retrieving nearest USFWS property for ", length(no_prop),
+            " observations with obscured locational coordinates.")
+    message(n_no_prop - length(no_prop), " observations have been discarded.")
+    near_prop <- nearest_prop(r, inat_sf, no_prop, progress = progress)
+    prop[no_prop] <- near_prop
+  }
 
   fwsinat <- fwsinat %>% tibble::add_column(., orgname = prop, .before = 1) %>%
     # Drop records apperently outside USFWS property boundary
