@@ -20,6 +20,10 @@
 #'  "2017-07-04T13:40:13-05:00"). Only records added or updated on iNaturalist after
 #'  this date will be returned. Primarily intended to be used internally from
 #'  \code{\link{update.fwsinat}}.
+#' @param multipart logical (default \code{FALSE}) indicating whether the current retrieval
+#'  is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the current
+#'  system time is recorded as the the \code{query_dt} attribute of the resulting
+#'  \code{fwsinat} object rather than \code{d2}, if specified.
 #'
 #' @return \code{fwsinat} \code{data.frame} of iNaturalist observations associated with the
 #'  \code{inat_proj} joined, when possible, with ITIS (\url{http://www.itis.gov})
@@ -43,11 +47,13 @@
 #' bs <- retrieve_inat("bon-secour-national-wildlife-refuge-bioblitz")
 #' }
 
-retrieve_inat <- function(inat_proj = "usfws-national-wildlife-refuge-system",
-                          d1 = NULL, d2 = NULL, since_date = NULL) {
+retrieve_inat <- function(inat_proj = c("usfws-national-wildlife-refuge-system",
+                                        "usfws-national-wildlife-refuge-system-bees-wasps"),
+                          d1 = NULL, d2 = NULL, since_date = NULL,
+                          multipart = FALSE) {
 
   q_dt <- Sys.time()
-  if (!is.null(d2)) q_dt <- min(q_dt, as.POSIXct(as.Date(d2)))
+  if (!is.null(d2) && !multipart) q_dt <- min(q_dt, as.POSIXct(as.Date(d2)))
 
   obs <- lapply(inat_proj, function(i) {
 

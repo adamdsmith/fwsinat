@@ -4,8 +4,9 @@
 \alias{retrieve_inat}
 \title{Retrieve observations from an iNaturalist project and link with ITIS}
 \usage{
-retrieve_inat(inat_proj = "usfws-national-wildlife-refuge-system",
-  d1 = NULL, d2 = NULL, since_date = NULL)
+retrieve_inat(inat_proj = c("usfws-national-wildlife-refuge-system",
+  "usfws-national-wildlife-refuge-system-bees-wasps"), d1 = NULL, d2 = NULL,
+  since_date = NULL, multipart = FALSE)
 }
 \arguments{
 \item{inat_proj}{character vector of name(s) of the iNaturalist project(s) as an
@@ -24,6 +25,11 @@ Specifying only \code{d2} returns all records on and before \code{d2}.}
 "2017-07-04T13:40:13-05:00"). Only records added or updated on iNaturalist after
 this date will be returned. Primarily intended to be used internally from
 \code{\link{update.fwsinat}}.}
+
+\item{multipart}{logical (default \code{FALSE}) indicating whether the current retrieval
+is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the current
+system time is recorded as the the \code{query_dt} attribute of the resulting
+\code{fwsinat} object rather than \code{d2}, if specified.}
 }
 \value{
 \code{fwsinat} \code{data.frame} of iNaturalist observations associated with the
