@@ -33,7 +33,7 @@ GET_inat <- function (id, d1, d2, since_date, nrecs_only = FALSE) {
   for (i in seq_len(n_loops)) {
     query_path <- paste0(id, ".csv?page=", i, "&per_page=200", search)
     q_url <- paste0(base_url, query_path)
-    qdat <- read.csv(q_url, stringsAsFactors = FALSE, encoding = "UTF-8")
+    qdat <- utils::read.csv(q_url, stringsAsFactors = FALSE, encoding = "UTF-8")
     dat <- bind_rows(dat, qdat)
     if (i %% 16 == 0) cat("\n  ") else cat("-"); cat(nrow(dat))
   }

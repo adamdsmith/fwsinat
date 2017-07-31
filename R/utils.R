@@ -18,7 +18,7 @@ nearest_prop <- function(r, inat_sf, no_prop, buff_deg = 0.2, progress = TRUE) {
       c(st_bbox(recs)[1] - buff_deg, st_bbox(recs)[3] + buff_deg,
         st_bbox(recs)[2] - buff_deg, st_bbox(recs)[4] + buff_deg))
     suppressWarnings(
-      r_crop <- st_intersection(r, st_set_crs(st_as_sf(as(buff_extent, "SpatialPolygons")), st_crs(r)))
+      r_crop <- st_intersection(r, st_set_crs(st_as_sf(methods::as(buff_extent, "SpatialPolygons")), st_crs(r)))
     )
 
     if (nrow(r_crop) == 0)
