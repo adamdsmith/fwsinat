@@ -55,20 +55,26 @@ ex <- retrieve_inat(slugs)
 
     ## Processing iNaturalist project: bon-secour-national-wildlife-refuge-bioblitz
 
-    ## 188  Records
-    ## 0-100-200
+    ## Retrieving 188 records.
+
+    ## Records retrieved: 
+    ##   0-188
 
     ## Processing iNaturalist project: 2012-bioblitz-at-don-edwards-san-francisco-bay-national-wildlife-refuge
 
-    ## 283  Records
-    ## 0-100-200-300
+    ## Retrieving 283 records.
+
+    ## Records retrieved: 
+    ##   0-200-283
 
     ## Processing iNaturalist project: antioch-dunes-national-wildlife-refuge-bioblitz
 
-    ## 159  Records
-    ## 0-100-200
+    ## Retrieving 159 records.
 
-    ## Retrieved 567 georeferenced iNaturalist records.
+    ## Records retrieved: 
+    ##   0-159
+
+    ## Retained 568 georeferenced iNaturalist records.
 
 and assign them to a refuge based on their geographic location...
 
@@ -78,7 +84,7 @@ Some (occasionally many) observations may not fall within a USFWS property bound
 ex <- assign_inat(ex, progress = FALSE)
 ```
 
-    ## 512 observations successfully assigned to an USFWS property.
+    ## 513 observations successfully assigned to an USFWS property.
 
     ## Retrieving nearest USFWS property for 4 observations with obscured locational coordinates.
 
@@ -90,7 +96,7 @@ This object contains observations for potentially many refuges. We want to distr
 orgs <- unique(ex$orgname)
 for (org in orgs) {
   tmp_ex <- dplyr::filter(ex, orgname == org)
-  export_inat_xl(tmp_ex, dir = "./Output", orgname = org)
+  export_inat(tmp_ex, dir = "./Output", orgname = org)
 }
 ```
 

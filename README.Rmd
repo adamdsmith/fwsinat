@@ -73,6 +73,6 @@ This object contains observations for potentially many refuges.  We want to dist
 orgs <- unique(ex$orgname)
 for (org in orgs) {
   tmp_ex <- dplyr::filter(ex, orgname == org)
-  export_inat_xl(tmp_ex, dir = "./Output", orgname = org)
+  export_inat(tmp_ex, dir = "./Output", orgname = org)
 }
 ```
