@@ -44,38 +44,48 @@
 retrieve_inat <- function(inat_proj = "usfws-national-wildlife-refuge-system",
                           d1 = NULL, d2 = NULL, since_date = NULL) {
 
-  message("Processing iNaturalist project: ", inat_proj)
   q_dt <- Sys.time()
+  if (!is.null(d2)) q_dt <- min(q_dt, as.POSIXct(as.Date(d2)))
 
-  # Retrieve observations for this request and inform of problem if too many
-  n_recs <- GET_inat(inat_proj, d1, d2, since_date, TRUE)
+  obs <- lapply(inat_proj, function(i) {
 
-  # Now get observations
-  if (n_recs > 10000) {
-    message("Only first 10,000 records will be returned.\n",
-            "To retrieve all records split up your request with an informed\n",
-            "use of the `d1` and `d2` arguments.\n\n",
-            "Do you wish to continue? Enter 'y' or 'n'.")
-    ans <- tolower(substr(readline(), 1L, 1L))
-    if (!(ans == "n"|ans == "y")) stop("Unrecognized response. Try again.")
-    if (ans == "n") invisible(return(NULL))
-  }
+    message("Processing iNaturalist project: ", i)
 
-  obs <- GET_inat(inat_proj, d1, d2, since_date)
+    # Retrieve observations for this request and inform of problem if too many
+    n_recs <- GET_inat(i, d1, d2, since_date, TRUE)
 
-  if (is.null(obs)) return(obs)
+    # Now get observations
+    if (n_recs > 10000) {
+      message("Only first 10,000 records will be returned.\n",
+              "To retrieve all records split up your request with an informed\n",
+              "use of the `d1` and `d2` arguments.\n\n",
+              "Do you wish to continue? Enter 'y' or 'n'.")
+      ans <- tolower(substr(readline(), 1L, 1L))
+      if (!(ans == "n"|ans == "y")) stop("Unrecognized response. Try again.")
+      if (ans == "n") invisible(return(NULL))
+    }
 
-  obs <- obs %>%
-    filter(!itistools::is_missing(Scientific.name),
-           !itistools::is_missing(Latitude),
-           !itistools::is_missing(Longitude))%>%
-    mutate(sci_name = clean_sci_name(Scientific.name),
-           date = as.Date(Observed.on, format = "%Y-%m-%d"),
-           last_inat_update = as.Date(Updated.at, format = "%Y-%m-%d"),
-           com_name = ifelse(itistools::is_missing(Common.name),
-                             NA_character_, itistools::Cap(Common.name)),
-           loc_obscured = as.logical(toupper(Coordinates.obscured)),
-           notes = ifelse(itistools::is_missing(Description), NA_character_, Description))
+    obs <- GET_inat(i, d1, d2, since_date)
+
+    if (is.null(obs)) return(obs)
+
+    obs <- obs %>%
+      filter(!itistools::is_missing(Scientific.name),
+             !itistools::is_missing(Latitude),
+             !itistools::is_missing(Longitude))%>%
+      mutate(sci_name = clean_sci_name(Scientific.name),
+             date = as.Date(Observed.on, format = "%Y-%m-%d"),
+             last_inat_update = as.Date(Updated.at, format = "%Y-%m-%d"),
+             com_name = ifelse(itistools::is_missing(Common.name),
+                               NA_character_, itistools::Cap(Common.name)),
+             loc_obscured = as.logical(toupper(Coordinates.obscured)),
+             notes = ifelse(itistools::is_missing(Description), NA_character_, Description))
+
+  })
+
+  if (all(sapply(obs, is.null))) return(NULL)
+
+  obs <- bind_rows(obs)
 
   itis <- itistools::get_itis(obs$sci_name)
 

@@ -26,10 +26,11 @@ update.fwsinat <- function(object, ...) {
 
   needs_assign <- "orgname" %in% names(object)
   old_q_dt <- attr(object, "query_dt")
+  inat_proj <- attr(object, "inat_proj")
 
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
   upd_dat <- suppressMessages(
-    retrieve_inat(since_date = since_date)
+    retrieve_inat(inat_proj, since_date = since_date)
   )
   if (is.null(upd_dat)) {
     message("No updated records available.")
