@@ -8,9 +8,11 @@ retrieve_inat(inat_proj = "usfws-national-wildlife-refuge-system",
   d1 = NULL, d2 = NULL, since_date = NULL)
 }
 \arguments{
-\item{inat_proj}{name of the iNaturalist project as an iNaturalist slug or group ID.
-Default is to retrieve records for the USFWS National Wildlife Refuge project
-(\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).}
+\item{inat_proj}{character vector of name(s) of the iNaturalist project(s) as an
+iNaturalist slug or group ID. Default is to retrieve records for the USFWS National
+Wildlife Refuge projects
+(\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system} and
+\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system-bees-wasps}).}
 
 \item{d1}{First date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-01").
 Specifying only \code{d1} returns all records on and after \code{d1}.}
@@ -38,7 +40,7 @@ An iNaturalist slug is usually the project name as single lower case
 }
 \examples{
 \dontrun{
-# Default is to retrieve records for USFWS National Wildlife Refuge System project
+# Default is to retrieve records for USFWS National Wildlife Refuge System projects
 fws <- retrieve_inat()
 fws_july17 <- retrieve_inat(d1 = "2017-07-01", d2 = "2017-07-31")
 

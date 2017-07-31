@@ -7,9 +7,11 @@
 #'  from the URL for the project. The USFWS NWRS project, for example, resides at
 #'  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}
 #'
-#' @param inat_proj name of the iNaturalist project as an iNaturalist slug or group ID.
-#'  Default is to retrieve records for the USFWS National Wildlife Refuge project
-#'  (\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
+#' @param inat_proj character vector of name(s) of the iNaturalist project(s) as an
+#'  iNaturalist slug or group ID. Default is to retrieve records for the USFWS National
+#'  Wildlife Refuge projects
+#'  (\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system} and
+#'  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system-bees-wasps}).
 #' @param d1 First date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-01").
 #'  Specifying only \code{d1} returns all records on and after \code{d1}.
 #' @param d2 Last date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-31").
@@ -33,7 +35,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' # Default is to retrieve records for USFWS National Wildlife Refuge System project
+#' # Default is to retrieve records for USFWS National Wildlife Refuge System projects
 #' fws <- retrieve_inat()
 #' fws_july17 <- retrieve_inat(d1 = "2017-07-01", d2 = "2017-07-31")
 #'
