@@ -37,6 +37,7 @@ GET_inat <- function (id, d1, d2, since_date, nrecs_only = FALSE) {
     dat <- bind_rows(dat, qdat)
     if (i %% 16 == 0) cat("\n  ") else cat("-"); cat(nrow(dat))
   }
+  cat("\n")
 
   dat
 
