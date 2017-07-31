@@ -76,7 +76,7 @@ clean_sci_name <- function(sn_string) {
   # Trim any leading/trailing blank spaces
   sn_string <- gsub("^\\s+|\\s+$", "", sn_string) %>%
     # Replace UTF-8 'hybrid' indicator with 'x'
-    gsub("×", "x", .) %>%
+    gsub("\u00D7|\u2715", "x", .) %>%
     # Drop any other improper characters
     iconv(., "UTF-8", "ascii", sub = "") %>%
     # Clean up any resulting double spaces...
