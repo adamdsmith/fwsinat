@@ -5,10 +5,15 @@
 #'  \code{\link{assign_inat}}
 #' @param dir a non-empty character scalar giving the directory within which to store
 #'  exported spreadsheets
+#' @param xl_out character string indicating the output file name (without extension);
+#'  note that periods and commas will be removed and spaces will be replaced with underscores
+#' @param overwrite logical (default \code{TRUE}) indicating whether to overwrite an existing file
+#' @param verbose logical (default \code{TRUE}) indicating whether to provide messaging during
+#'  export process
 #'
 #' @return \code{NULL}; Exports Excel file(s) to \code{dir}
 #'
-#' @import xlsx
+#' @import openxlsx
 #' @export
 #' @examples
 #' \dontrun{
@@ -16,57 +21,46 @@
 #' export_inat(fws, "./fws.xlsx")
 #' }
 
-export_inat <- function (fwsinat, dir = NULL, orgname, verbose = TRUE) {
+export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose = TRUE) {
+
+  if (!inherits(fwsinat, "fwsinat")) stop("This function is intended for use ",
+                                          "only with `fwsinat` objects. See `?retrieve_inat`.")
 
   if (is.null(dir)) stop("You must specify and output directory.\n",
                          "If it does not exist it will be created.")
   if (!dir.exists(dir)) dir.create(dir)
 
-  if (verbose) cat("Processing", paste0(orgname, "...  "))
+  if (verbose) cat("Processing", paste0(xl_out, "...  "))
 
   # Drop orgname from output
-  fwsinat <- select(fwsinat, -orgname)
+  is_assign <- "orgname" %in% names(fwsinat)
+  if (is_assign) fwsinat <- select(fwsinat, -orgname)
 
-  oldOpt <- options(xlsx.date.format="yyyy-mm-dd")
+  oldOpt <- options("openxlsx.dateFormat" = "yyyy-mm-dd")
   on.exit(options(oldOpt))
-  wb <- createWorkbook(type = "xlsx")
-  sheet <- createSheet(wb, "fwsinat Output")
-  noRows <- nrow(fwsinat) + 1 # add room for header row
-  noCols <- ncol(fwsinat)
-  rows <- createRow(sheet, 1)
-  cells <- createCell(rows, colIndex = 1:noCols)
-  mapply(setCellValue, cells[1, 1:noCols], colnames(fwsinat))
-  colIndex <- seq_len(ncol(fwsinat))
-  rowIndex <- seq_len(nrow(fwsinat)) + 1 # skip header row
-  createFreezePane(sheet, 2, 1)
 
-  url_col <- which(names(fwsinat) == "url")
-  rows <- createRow(sheet, rowIndex)
-  cells <- createCell(rows, colIndex)
+  # Identify iNaturalist hyperlink column and round lat/lon
+  class(fwsinat$url) <- "hyperlink"
+  fwsinat <- mutate(fwsinat,
+                    lat = round(lat, 4),
+                    lon = round(lon, 4))
 
-  for (ic in seq_along(fwsinat)) {
-    if (ic != url_col) {
-      mapply(setCellValue, cells[seq_len(nrow(cells)), colIndex[ic]], fwsinat[, ic],
-             showNA = FALSE)
-    } else {
-      mapply(setCellValue, cells[seq_len(nrow(cells)), colIndex[ic]], "iNaturalist record",
-             showNA = FALSE)
-      mapply(addHyperlink, cells[seq_len(nrow(cells)), colIndex[ic]], fwsinat[, ic])
-    }
-  }
+  wb <- createWorkbook()
+  urls <- which(names(fwsinat) == "url")
+  addWorksheet(wb, "fwsinat Output")
 
-  indDT <- which(sapply(fwsinat, function(i) inherits(i, "Date")))
-  if (length(indDT) > 0) {
-    dateFormat <- CellStyle(wb) + DataFormat(getOption("xlsx.date.format"))
-    for (ic in indDT) lapply(cells[seq_len(nrow(cells)), colIndex[ic]], setCellStyle, dateFormat)
-  }
+  col_widths <- c(rep(25, 3), rep(16, 2), rep(13, 2), rep(9, 2), 13, 16, 10, rep(16, 2))
+  setColWidths(wb, 1, cols = seq_along(fwsinat), widths = col_widths)
+  freezePane(wb, 1, firstRow = TRUE)
 
-  addAutoFilter(getSheets(wb)[["fwsinat Output"]],
-                paste(LETTERS[c(1, ncol(fwsinat))], collapse = ":"))
-  autoSizeColumn(getSheets(wb)[["fwsinat Output"]], which(!names(fwsinat) == "notes"))
+  # Write and save it
+  writeData(wb, 1, fwsinat, withFilter = TRUE)
+  # Change hyperlink display text
+  writeData(wb, sheet = 1, x = rep("iNaturalist record", nrow(fwsinat)),
+            startRow = 2, startCol = urls)
 
-  fn <- construct_fn(orgname)
-  saveWorkbook(wb, file.path(dir, fn))
+  fn <- construct_fn(xl_out)
+  saveWorkbook(wb, file.path(dir, fn), overwrite = overwrite)
   if (verbose) cat(fn, "successfully created.\n")
   invisible()
 }

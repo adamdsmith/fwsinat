@@ -16,7 +16,7 @@ Imports:
     methods,
     raster (>= 2.5.8),
     sf (>= 0.5.3),
-    xlsx (>= 0.5.7),
+    openxlsx (>= 4.0.17),
     tibble (>= 1.3),
     tools,
     utils
