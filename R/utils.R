@@ -84,8 +84,8 @@ clean_sci_name <- function(sn_string) {
   sn_string
 }
 
-construct_fn <- function(orgname) {
-  orgname %>% gsub(" ", "_", .) %>%
+construct_fn <- function(x) {
+  x %>% gsub(" ", "_", .) %>%
     gsub("\\.|,|;", "", .) %>%
     paste0(".xlsx")
 }
@@ -94,3 +94,4 @@ as_fwsinat <- function(x) {
   if (inherits(x, "fwsinat")) return(x)
   class(x) <- c("fwsinat", class(x))
   return(x)
+}
