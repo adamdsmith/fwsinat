@@ -86,6 +86,6 @@ clean_sci_name <- function(sn_string) {
 
 construct_fn <- function(orgname) {
   orgname %>% gsub(" ", "_", .) %>%
-    gsub("\\.", "", .) %>%
+    gsub("\\.|,|;", "", .) %>%
     paste0(".xlsx")
 }
