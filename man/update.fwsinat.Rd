@@ -20,7 +20,9 @@ produced by running \code{\link{retrieve_inat}}, and (optionally) subsequently t
 }
 \description{
 This function uses the query timestamp associated with the \code{fwsinat}
- \code{object} to perform a new
+ \code{object} to perform a new iNaturalist retrieval for the associated
+ projects and update/add records that have changed or are new since the
+ previous query.
 }
 \examples{
 \dontrun{

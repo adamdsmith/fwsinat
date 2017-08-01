@@ -1,7 +1,9 @@
 #' Update previous retrieval of observations from an iNaturalist project
 #'
 #' This function uses the query timestamp associated with the \code{fwsinat}
-#'  \code{object} to perform a new
+#'  \code{object} to perform a new iNaturalist retrieval for the associated
+#'  projects and update/add records that have changed or are new since the
+#'  previous query.
 #'
 #' @param object \code{fwsinat} \code{data.frame} of iNaturalist observations
 #'  produced by running \code{\link{retrieve_inat}}, and (optionally) subsequently through
@@ -29,9 +31,7 @@ update.fwsinat <- function(object, ...) {
   inat_proj <- attr(object, "inat_proj")
 
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
-  upd_dat <- suppressMessages(
-    retrieve_inat(inat_proj, since_date = since_date)
-  )
+  upd_dat <- retrieve_inat(inat_proj, since_date = since_date)
   if (is.null(upd_dat)) {
     message("No updated records available.")
     return(object)
@@ -48,7 +48,7 @@ update.fwsinat <- function(object, ...) {
   upd_rows <- old_recs[!is.na(old_recs)]
 
   # Replace updated records
-  message("Updating ", length(upd_rows), " existing records.")
+  message("Updated ", length(upd_rows), " existing records.")
   object[upd_rows, ] <- upd_dat[!is.na(old_recs), ]
 
   # Add new records
