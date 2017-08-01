@@ -80,7 +80,7 @@ retrieve_inat <- function(inat_proj = c("usfws-national-wildlife-refuge-system",
     obs <- obs %>%
       filter(!itistools::is_missing(Scientific.name),
              !itistools::is_missing(Latitude),
-             !itistools::is_missing(Longitude))%>%
+             !itistools::is_missing(Longitude)) %>%
       mutate(sci_name = clean_sci_name(Scientific.name),
              date = as.Date(Observed.on, format = "%Y-%m-%d"),
              last_inat_update = as.Date(Updated.at, format = "%Y-%m-%d"),
@@ -115,7 +115,7 @@ retrieve_inat <- function(inat_proj = c("usfws-national-wildlife-refuge-system",
 
   message("Retained ", nrow(obs), " georeferenced iNaturalist records.")
 
-  class(obs) <- c("fwsinat", "data.frame")
+  class(obs) <- c("fwsinat", class(obs))
   attr(obs, "inat_proj") <- inat_proj
   attr(obs, "query_dt") <- q_dt
 
