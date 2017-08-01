@@ -33,8 +33,9 @@ The `fwsinat` package
 This packages currently contains functions to:
 
 1.  download iNaturalist observations for any number of iNaturalist projects (`retrieve_inat`);
-2.  assign those observation to the USFWS property in which they occur (`assign_inat`); and
-3.  export the observations to separate spreadsheets by USFWS property for distribution (`export_inat_xl`);
+2.  (optionally) assign those observation to the USFWS property in which they occur (`assign_inat`);
+3.  update previously retrieved observations from iNaturalist projects (`update`); and
+4.  export the observations to separate spreadsheets by USFWS property for distribution (`export_inat`);
 
 Using `fwsinat`
 ===============
@@ -96,7 +97,7 @@ This object contains observations for potentially many refuges. We want to distr
 orgs <- unique(ex$orgname)
 for (org in orgs) {
   tmp_ex <- dplyr::filter(ex, orgname == org)
-  export_inat(tmp_ex, dir = "./Output", orgname = org)
+  export_inat(tmp_ex, dir = "./Output", xl_out = org)
 }
 ```
 
