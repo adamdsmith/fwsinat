@@ -2,7 +2,7 @@
 % Please edit documentation in R/bind_rows.R
 \name{bind_rows}
 \alias{bind_rows}
-\title{Bind Rows (fwsinat)}
+\title{Use dplyr::bind_rows on fwsinat objects}
 \usage{
 bind_rows(...)
 }
@@ -10,17 +10,17 @@ bind_rows(...)
 \item{...}{Inputs passed to dplyr::bind_rows}
 }
 \value{
-If all inputs are `fwsinat` objects, then the attributes
- are stacked and an `fwsinat` will be returned.  Otherwise, the expected
- outcome of `dplyr::bind_rows` is returned and a message is displayed.
+If all inputs are \code{fwsinat} objects, then the attributes
+ are stacked and an \code{fwsinat} will be returned.  Otherwise, the expected
+ outcome of \code{\link[dplyr]{left_join}} is returned and a message is displayed.
 }
 \description{
-Since dplyr::bind_rows is not currently an S3 method, this function
- masks dplyr::bind_rows (although it is called directly) for use on
- `fwsinat`` objects.
+Since \code{dplyr::bind_rows} is not currently an S3 method, this function
+ masks \code{dplyr::bind_rows} (although it is called directly) for use on
+ \code{fwsinat} objects.
 }
 \seealso{
-[Related dplyr issue](https://github.com/tidyverse/dplyr/issues/2457)
-
 \code{\link[dplyr]{bind_rows}}
+
+\url{https://github.com/tidyverse/dplyr/issues/2457}
 }

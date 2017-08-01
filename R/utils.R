@@ -89,3 +89,8 @@ construct_fn <- function(orgname) {
     gsub("\\.|,|;", "", .) %>%
     paste0(".xlsx")
 }
+
+as_fwsinat <- function(x) {
+  if (inherits(x, "fwsinat")) return(x)
+  class(x) <- c("fwsinat", class(x))
+  return(x)

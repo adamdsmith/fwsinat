@@ -82,7 +82,7 @@ assign_inat <- function(fwsinat, progress = TRUE) {
     mutate(orgname = clean_orgnames(orgname)) %>%
     arrange(orgname, iconic_taxon, sci_name, -as.numeric(date))
 
-  class(fwsinat) <- c("fwsinat", "data.frame")
+  # Restore attributes
   attr(fwsinat, "inat_proj") <- inat_proj
   attr(fwsinat, "query_dt") <- q_dt
 

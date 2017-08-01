@@ -61,7 +61,6 @@ update.fwsinat <- function(object, ...) {
   else
     object <- object %>% arrange(iconic_taxon, sci_name, -as.numeric(date))
 
-  class(object) <- c("fwsinat", "data.frame")
   attr(object, "query_dt") <- attr(upd_dat, "query_dt")
 
   return(object)

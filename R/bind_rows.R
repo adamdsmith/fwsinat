@@ -1,20 +1,16 @@
-#' Bind Rows (fwsinat)
+#' Use dplyr::bind_rows on fwsinat objects
 #'
-#' Since dplyr::bind_rows is not currently an S3 method, this function
-#'  masks dplyr::bind_rows (although it is called directly) for use on
-#'  `fwsinat`` objects.
+#' Since \code{dplyr::bind_rows} is not currently an S3 method, this function
+#'  masks \code{dplyr::bind_rows} (although it is called directly) for use on
+#'  \code{fwsinat} objects.
 #'
 #' @param ... Inputs passed to dplyr::bind_rows
-
-#' @return If all inputs are `fwsinat` objects, then the attributes
-#'  are stacked and an `fwsinat` will be returned.  Otherwise, the expected
-#'  outcome of `dplyr::bind_rows` is returned and a message is displayed.
-#'
-#' @seealso [Related dplyr issue](https://github.com/tidyverse/dplyr/issues/2457)
+#' @return If all inputs are \code{fwsinat} objects, then the attributes
+#'  are stacked and an \code{fwsinat} will be returned.  Otherwise, the expected
+#'  outcome of \code{\link[dplyr]{left_join}} is returned and a message is displayed.
 #' @seealso \code{\link[dplyr]{bind_rows}}
-#'
+#' @seealso \url{https://github.com/tidyverse/dplyr/issues/2457}
 #' @export
-
 bind_rows <- function(...) {
   fwsinats <- list(...)
   is_fwsinats <- unlist(lapply(fwsinats, function(i) inherits(i, "fwsinat")))
