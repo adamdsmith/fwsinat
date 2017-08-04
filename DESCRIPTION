@@ -8,9 +8,9 @@ Maintainer: Adam D. Smith <adam_d_smith@fws.gov>
 Description: Functions to retrieve iNaturalist observations on USFWS properties and process them
     into an online database accessible and filterable by staff on those properties.
 Depends:
-    R (>= 3.3)
+    R (>= 3.3),
+    dplyr (>= 0.7.1)
 Imports:
-    dplyr (>= 0.7.1),
     httr (>= 1.2.1),
     jsonlite (>= 1.5),
     methods,
