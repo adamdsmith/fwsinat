@@ -95,3 +95,8 @@ as_fwsinat <- function(x) {
   class(x) <- c("fwsinat", class(x))
   return(x)
 }
+
+wrap_text <- function(...) {
+  text <- list(...)
+  text <- paste(text, collapse = " ")
+  paste(strwrap(text), collapse = "\n")
