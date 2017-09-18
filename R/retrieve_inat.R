@@ -72,7 +72,7 @@ retrieve_inat <- function(refuge = NULL,
     if (verbose) message(wrap_text("Processing ", ref_name, proj_status))
 
     # Retrieve observations for this request and inform of problem if too many
-    n_recs <- GET_inat(i, d1, d2, since_date, TRUE)
+    n_recs <- GET_inat(place_id, inat_proj, d1, d2, since_date, TRUE, verbose)
 
     # Now get observations
     if (n_recs > 10000) {
@@ -85,7 +85,7 @@ retrieve_inat <- function(refuge = NULL,
       if (ans == "n") invisible(return(NULL))
     }
 
-    obs <- GET_inat(i, d1, d2, since_date)
+    obs <- GET_inat(place_id, inat_proj, d1, d2, since_date, FALSE, verbose)
 
     if (is.null(obs)) return(obs)
 
@@ -125,7 +125,12 @@ retrieve_inat <- function(refuge = NULL,
            user = User.login) %>%
     arrange(iconic_taxon, sci_name, -as.numeric(date))
 
-  message("Retained ", nrow(obs), " georeferenced iNaturalist records.")
+  if (verbose)
+    if (n_dl - nrow(obs) > 0)
+      message(
+        wrap_text("Discarded", n_dl - nrow(obs), "iNaturalist observations",
+                "missing coordinate information.")
+      )
 
   class(obs) <- c("fwsinat", class(obs))
   attr(obs, "inat_proj") <- inat_proj
