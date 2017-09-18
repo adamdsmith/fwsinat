@@ -90,16 +90,16 @@ retrieve_inat <- function(refuge = NULL,
     if (is.null(obs)) return(obs)
 
     obs <- obs %>%
-      filter(!itistools::is_missing(Scientific.name),
-             !itistools::is_missing(Latitude),
-             !itistools::is_missing(Longitude)) %>%
-      mutate(sci_name = clean_sci_name(Scientific.name),
-             date = as.Date(Observed.on, format = "%Y-%m-%d"),
-             last_inat_update = as.Date(Updated.at, format = "%Y-%m-%d"),
-             com_name = ifelse(itistools::is_missing(Common.name),
-                               NA_character_, itistools::Cap(Common.name)),
-             loc_obscured = as.logical(toupper(Coordinates.obscured)),
-             notes = ifelse(itistools::is_missing(Description), NA_character_, Description))
+      filter(!itistools::is_missing(latitude),
+             !itistools::is_missing(longitude)) %>%
+      mutate(orgname = i,
+             sci_name = clean_sci_name(scientific_name),
+             date = as.Date(observed_on, format = "%Y-%m-%d"),
+             last_inat_update = as.Date(updated_at, format = "%Y-%m-%d"),
+             com_name = ifelse(itistools::is_missing(common_name),
+                               NA_character_, itistools::Cap(common_name)),
+             loc_obscured = as.logical(toupper(coordinates_obscured)),
+             notes = ifelse(itistools::is_missing(description), NA_character_, description))
 
   })
 
@@ -109,20 +109,24 @@ retrieve_inat <- function(refuge = NULL,
 
   itis <- itistools::get_itis(obs$sci_name)
 
+  if (identical(itis, tibble()))
+    itis <- empty_itis()
+
   # Now join ITIS info to occurrence records
   obs <- left_join(ungroup(obs), itis, by = "sci_name") %>%
     mutate(sci_name = ifelse(is.na(valid_sci_name), sci_name, valid_sci_name),
-           iconic_taxon = layman_iconic(Iconic.taxon.name)) %>%
-    select(sci_name,
+           iconic_taxon = layman_iconic(iconic_taxon_name)) %>%
+    select(orgname,
+           sci_name,
            com_name,
            itis_com_name,
            iconic_taxon,
            itis_taxon_rank,
            date,
            last_inat_update,
-           lat = Latitude, lon = Longitude, loc_obscured,
-           notes, grade = Quality.grade, url = Url,
-           user = User.login) %>%
+           lat = latitude, lon = longitude, loc_obscured,
+           notes, grade = quality_grade, url,
+           user = user_login) %>%
     arrange(iconic_taxon, sci_name, -as.numeric(date))
 
   if (verbose)
