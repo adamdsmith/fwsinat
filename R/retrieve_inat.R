@@ -106,6 +106,7 @@ retrieve_inat <- function(refuge = NULL,
   if (all(sapply(obs, is.null))) return(NULL)
 
   obs <- bind_rows(obs)
+  n_dl <- nrow(obs)
 
   itis <- itistools::get_itis(obs$sci_name)
 
@@ -137,7 +138,7 @@ retrieve_inat <- function(refuge = NULL,
       )
 
   class(obs) <- c("fwsinat", class(obs))
-  attr(obs, "inat_proj") <- inat_proj
+  attr(obs, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
   attr(obs, "query_dt") <- q_dt
 
   obs
