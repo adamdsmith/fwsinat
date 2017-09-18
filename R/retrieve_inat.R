@@ -47,17 +47,29 @@
 #' bs <- retrieve_inat("bon-secour-national-wildlife-refuge-bioblitz")
 #' }
 
-retrieve_inat <- function(inat_proj = c("usfws-national-wildlife-refuge-system",
-                                        "usfws-national-wildlife-refuge-system-bees-wasps"),
+retrieve_inat <- function(refuge = NULL,
+                          inat_proj = "usfws-national-wildlife-refuge-system",
                           d1 = NULL, d2 = NULL, since_date = NULL,
-                          multipart = FALSE) {
+                          multipart = FALSE, verbose = TRUE) {
+
+  if (is.null(refuge)) refuge <- fwsinat::find_refuges()
+  if (length(inat_proj) > 1) stop("Only a single iNaturalist project may be specified")
 
   q_dt <- Sys.time()
   if (!is.null(d2) && !multipart) q_dt <- min(q_dt, as.POSIXct(as.Date(d2)))
 
-  obs <- lapply(inat_proj, function(i) {
+  obs <- lapply(refuge, function(i) {
+    r <- utils::read.csv(system.file("extdata", "fws_place_ids.csv", package = "fwsinat"),
+                         stringsAsFactors = FALSE)
+    ref_name <- r[r$orgname == i, "name"]
+    place_id <- r[r$orgname == i, "inat_place_id"]
 
-    message("Processing iNaturalist project: ", i)
+    if (is.null(inat_proj))
+      proj_status <- " across all iNaturalist projects."
+    else
+      proj_status <- paste(" within the", inat_proj, "project.")
+
+    if (verbose) message(wrap_text("Processing ", ref_name, proj_status))
 
     # Retrieve observations for this request and inform of problem if too many
     n_recs <- GET_inat(i, d1, d2, since_date, TRUE)
