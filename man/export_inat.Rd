@@ -4,7 +4,7 @@
 \alias{export_inat}
 \title{Export iNaturalist observations to Excel file(s) based on for assigned to FWS properties  refuges}
 \usage{
-export_inat(fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose = TRUE)
+export_inat(fwsinat, dir = NULL, overwrite = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{fwsinat}{\code{fwsinat} \code{data.frame} of iNaturalist observations
@@ -12,9 +12,6 @@ produced by running \code{\link{retrieve_inat}}}
 
 \item{dir}{a non-empty character scalar giving the directory within which to store
 exported spreadsheets}
-
-\item{xl_out}{character string indicating the output file name (without extension);
-note that periods and commas will be removed and spaces will be replaced with underscores}
 
 \item{overwrite}{logical (default \code{TRUE}) indicating whether to overwrite an existing file}
 

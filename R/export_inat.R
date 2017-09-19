@@ -4,8 +4,6 @@
 #'  produced by running \code{\link{retrieve_inat}}
 #' @param dir a non-empty character scalar giving the directory within which to store
 #'  exported spreadsheets
-#' @param xl_out character string indicating the output file name (without extension);
-#'  note that periods and commas will be removed and spaces will be replaced with underscores
 #' @param overwrite logical (default \code{TRUE}) indicating whether to overwrite an existing file
 #' @param verbose logical (default \code{TRUE}) indicating whether to provide messaging during
 #'  export process
@@ -20,7 +18,7 @@
 #' export_inat(fws, "./fws.xlsx")
 #' }
 
-export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose = TRUE) {
+export_inat <- function (fwsinat, dir = NULL, overwrite = TRUE, verbose = TRUE) {
 
   if (!inherits(fwsinat, "fwsinat")) stop("This function is intended for use ",
                                           "only with `fwsinat` objects. See `?retrieve_inat`.")
@@ -29,14 +27,14 @@ export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose 
                          "If it does not exist it will be created.")
   if (!dir.exists(dir)) dir.create(dir)
 
-  if (verbose) cat("Processing", paste0(xl_out, "...  "))
-
-  # Drop orgname from output
-  is_assign <- "orgname" %in% names(fwsinat)
-  if (is_assign) fwsinat <- select(fwsinat, -.data$orgname)
+  orgs <- sort(unique(fwsinat$orgname))
 
   oldOpt <- options("openxlsx.dateFormat" = "yyyy-mm-dd")
   on.exit(options(oldOpt))
+
+  r <- utils::read.csv(system.file("extdata", "fws_place_ids.csv", package = "fwsinat"),
+                       stringsAsFactors = FALSE)
+  fwsinat <- left_join(fwsinat, r[, c("orgname", "name")], by = "orgname")
 
   # Identify iNaturalist hyperlink column and round lat/lon
   class(fwsinat$url) <- "hyperlink"
@@ -44,22 +42,30 @@ export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose 
                     lat = round(.data$lat, 4),
                     lon = round(.data$lon, 4))
 
-  wb <- createWorkbook()
-  urls <- which(names(fwsinat) == "url")
-  addWorksheet(wb, "fwsinat Output")
+  lapply(orgs, function(org) {
+    org_dat <- filter(fwsinat, .data$orgname == org)
+    nm <- unique(org_dat$name)
+    org_dat <- select(org_dat, -.data$orgname, -.data$name)
+    wb <- createWorkbook()
+    urls <- which(names(org_dat) == "url")
+    addWorksheet(wb, "fwsinat Output")
 
-  col_widths <- c(rep(25, 3), rep(16, 2), rep(13, 2), rep(9, 2), 13, 16, 10, rep(16, 2))
-  setColWidths(wb, 1, cols = seq_along(fwsinat), widths = col_widths)
-  freezePane(wb, 1, firstRow = TRUE)
+    col_widths <- c(rep(25, 3), rep(16, 2), rep(13, 2), rep(9, 2), 13, 16, 10, rep(16, 2))
+    setColWidths(wb, 1, cols = seq_along(org_dat), widths = col_widths)
+    freezePane(wb, 1, firstRow = TRUE)
 
-  # Write and save it
-  writeData(wb, 1, fwsinat, withFilter = TRUE)
-  # Change hyperlink display text
-  writeData(wb, sheet = 1, x = rep("iNaturalist record", nrow(fwsinat)),
-            startRow = 2, startCol = urls)
+    # Write and save it
+    writeData(wb, 1, org_dat, withFilter = TRUE)
+    # Change hyperlink display text
+    writeData(wb, sheet = 1, x = rep("iNaturalist record", nrow(org_dat)),
+              startRow = 2, startCol = urls)
 
-  fn <- construct_fn(xl_out)
-  saveWorkbook(wb, file.path(dir, fn), overwrite = overwrite)
-  if (verbose) cat(fn, "successfully created.\n")
+    fn <- construct_fn(nm)
+    if (verbose) cat("Processing", paste0(nm, "...  "))
+    saveWorkbook(wb, file.path(dir, fn), overwrite = overwrite)
+    if (verbose) cat("Export successful.\n")
+  })
+
   invisible()
+
 }
