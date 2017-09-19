@@ -26,19 +26,19 @@
 
 update.fwsinat <- function(object, ...) {
 
-  needs_assign <- "orgname" %in% names(object)
   old_q_dt <- attr(object, "query_dt")
-  inat_proj <- attr(object, "inat_proj")
-
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
-  upd_dat <- retrieve_inat(inat_proj, since_date = since_date)
-  if (is.null(upd_dat)) {
-    message("No updated records available.")
-    return(object)
-  }
+  inat_proj <- attr(object, "inat_proj")
+  if (inat_proj == "all") inat_proj <- NULL
+  refuge <- sort(unique(object$orgname))
 
-  if (needs_assign)
-    upd_dat <- assign_inat(upd_dat)
+  q_dt <- Sys.time()
+  upd_dat <- lapply(refuge, function(i) {
+    retrieve_inat(i, inat_proj, since_date = since_date, verbose = FALSE)
+  })
+  upd_dat <- bind_rows(upd_dat)
+  attr(upd_dat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
+  attr(upd_dat, "query_dt") <- q_dt
 
   stopifnot(identical(names(object), names(upd_dat)))
 
@@ -53,15 +53,10 @@ update.fwsinat <- function(object, ...) {
 
   # Add new records
   message("Added ", sum(is.na(old_recs)), " new records.")
-  object <- bind_rows(object, upd_dat[is.na(old_recs), ])
-
-  # Sort them
-  if (needs_assign)
-    object <- object %>% arrange(orgname, iconic_taxon, sci_name, -as.numeric(date))
-  else
-    object <- object %>% arrange(iconic_taxon, sci_name, -as.numeric(date))
-
+  object <- bind_rows(object, upd_dat[is.na(old_recs), ]) %>%
+    arrange(orgname, iconic_taxon, sci_name, -as.numeric(date))
   attr(object, "query_dt") <- attr(upd_dat, "query_dt")
 
-  return(object)
+  object
+
 }
