@@ -1,8 +1,7 @@
 #' Export iNaturalist observations to Excel file(s) based on for assigned to FWS properties  refuges
 #'
 #' @param fwsinat \code{fwsinat} \code{data.frame} of iNaturalist observations
-#'  produced by running \code{\link{retrieve_inat}}, and (optionally) subsequently through
-#'  \code{\link{assign_inat}}
+#'  produced by running \code{\link{retrieve_inat}}
 #' @param dir a non-empty character scalar giving the directory within which to store
 #'  exported spreadsheets
 #' @param xl_out character string indicating the output file name (without extension);

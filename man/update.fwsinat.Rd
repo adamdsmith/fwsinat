@@ -7,29 +7,35 @@
 \method{update}{fwsinat}(object, ...)
 }
 \arguments{
-\item{object}{\code{fwsinat} \code{data.frame} of iNaturalist observations
-produced by running \code{\link{retrieve_inat}}, and (optionally) subsequently through
-\code{\link{assign_inat}}}
+\item{object}{\code{fwsinat} object of iNaturalist observations
+produced by \code{\link{retrieve_inat}}}
 
 \item{...}{not used in this implementation}
 }
 \value{
-\code{fwsinat} \code{data.frame} of iNaturalist observations associated with the
- \code{inat_proj} joined, when possible, with ITIS (\url{http://www.itis.gov})
- information
+\code{fwsinat} object of iNaturalist observations associated
+ with one or more USFWS properties, and potentially an iNaturalist project.
+ These observations are joined, when possible, with ITIS
+ (\url{http://www.itis.gov}) information.
 }
 \description{
-This function uses the query timestamp associated with the \code{fwsinat}
+Uses the query timestamp associated with the \code{fwsinat}
  \code{object} to perform a new iNaturalist retrieval for the associated
- projects and update/add records that have changed or are new since the
- previous query.
+ USFWS properties (and possibly project) and updates records that have
+ changed and adds records created since the previous query.
 }
 \examples{
 \dontrun{
-# Default is to retrieve records for USFWS National Wildlife Refuge System project
+# Default is to retrieve observations from the USFWS National Wildlife
+# Refuge System project on all available USFWS properties
 fws <- retrieve_inat()
 
-# Wait a while... hours, days, months...whatever
+# Wait a while... hours, days, months... for users to update and add new
+# observations
 fws <- update(fws)
 }
+}
+\seealso{
+\code{\link{retrieve_inat}} for details on making the initial
+ retrieval of iNaturalist observations
 }

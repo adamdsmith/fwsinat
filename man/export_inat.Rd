@@ -8,8 +8,7 @@ export_inat(fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{fwsinat}{\code{fwsinat} \code{data.frame} of iNaturalist observations
-produced by running \code{\link{retrieve_inat}}, and (optionally) subsequently through
-\code{\link{assign_inat}}}
+produced by running \code{\link{retrieve_inat}}}
 
 \item{dir}{a non-empty character scalar giving the directory within which to store
 exported spreadsheets}

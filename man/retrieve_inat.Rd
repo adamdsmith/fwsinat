@@ -2,18 +2,26 @@
 % Please edit documentation in R/retrieve_inat.R
 \name{retrieve_inat}
 \alias{retrieve_inat}
-\title{Retrieve observations from an iNaturalist project and link with ITIS}
+\title{Retrieve iNaturalist observations on USFWS properties}
 \usage{
-retrieve_inat(inat_proj = c("usfws-national-wildlife-refuge-system",
-  "usfws-national-wildlife-refuge-system-bees-wasps"), d1 = NULL, d2 = NULL,
-  since_date = NULL, multipart = FALSE)
+retrieve_inat(refuge = NULL,
+  inat_proj = "usfws-national-wildlife-refuge-system", d1 = NULL,
+  d2 = NULL, since_date = NULL, multipart = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{inat_proj}{character vector of name(s) of the iNaturalist project(s) as an
-iNaturalist slug or group ID. Default is to retrieve records for the USFWS National
-Wildlife Refuge projects
-(\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system} and
-\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system-bees-wasps}).}
+\item{refuge}{character scalar or vector indicating USFWS properties
+on which to retrieve iNaturalist observations.  It is strongly advised that
+the input for this parameter result from running \code{\link{find_refuges}} to
+avoid potential mismatches.  See examples. By default, all 500+ USFWS
+properties with boundaries in iNaturalist are used.}
+
+\item{inat_proj}{character scalar of an iNaturalist project as an iNaturalist
+slug or group ID. Default is to retrieve all records on the property associated
+with the USFWS National Wildlife Refuge System project
+("usfws-national-wildlife-refuge-system";
+\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
+Another potentially useful option is to retrieve all available iNaturalist records
+on the property using (\code{inat_proj = NULL})}
 
 \item{d1}{First date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-01").
 Specifying only \code{d1} returns all records on and after \code{d1}.}
@@ -30,38 +38,42 @@ this date will be returned. Primarily intended to be used internally from
 is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the current
 system time is recorded as the the \code{query_dt} attribute of the resulting
 \code{fwsinat} object rather than \code{d2}, if specified.}
+
+\item{verbose}{logical (default \code{TRUE}); print informative messages?}
 }
 \value{
-\code{fwsinat} \code{data.frame} of iNaturalist observations associated with the
- \code{inat_proj} joined, when possible, with ITIS (\url{http://www.itis.gov})
- information
+\code{fwsinat} object (essentially a \code{data.frame} with a few additional
+ attributes) of iNaturalist observations associated with the supplied \code{refuge}(s)
+ and \code{inat_proj}, if any, and joined, when possible, with ITIS
+ (\url{http://www.itis.gov}) information
 }
 \description{
-An iNaturalist slug is usually the project name as single lower case
- string with words seperated by hyphens. For instance, the project "USFWS
- National Wildlife Refuge System" has a slug of
- "usfws-national-wildlife-refuge-system". The slug can also be extracted
- from the URL for the project. The USFWS NWRS project, for example, resides at
+The observations can also be restricted to a single iNaturalist project,
+ which is associated with a "slug", usually in the form of the project name
+ as a single lower case string with words seperated by hyphens. For instance,
+ the default "USFWS National Wildlife Refuge System" project has a slug of
+ "usfws-national-wildlife-refuge-system". The slug can be extracted from the
+ for the project. The USFWS NWRS project, for example, resides at
  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}
 }
 \examples{
 \dontrun{
-# Default is to retrieve records for USFWS National Wildlife Refuge System projects
+# Default is to retrieve records for all available USFWS properties from the USFWS
+# National Wildlife Refuge System projects
 fws <- retrieve_inat()
 fws_july17 <- retrieve_inat(d1 = "2017-07-01", d2 = "2017-07-31")
 
 # But it works with other projects too
-bs <- retrieve_inat("bon-secour-national-wildlife-refuge-bioblitz")
+bon <- find_refuges("bon secour")
+bs <- retrieve_inat(bon, "bon-secour-national-wildlife-refuge-bioblitz")
+
+# Or get all available iNaturalist observations on the property
+bon <- find_refuges("bon secour")
+bs_all <- retrieve_inat(bon, inat_proj = NULL)
 }
 }
 \seealso{
-\code{\link{bind_rows}} for joining multiple iNaturalist data retrievals while
- preserving attributes
-
-\code{\link{assign_inat}} for assigning iNaturalist observations to FWS
- properties
-
 \code{\link{update.fwsinat}} for updating a previous iNaturalist data retrieval
 
-\code{\link{export_inat}} for exporting a previous iNaturalist data retrieval
+\code{\link{export_inat}} for exporting an iNaturalist data retrieval
 }
