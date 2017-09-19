@@ -59,7 +59,8 @@ update.fwsinat <- function(object, ...) {
   # Add new records
   message("Added ", sum(is.na(old_recs)), " new records.")
   object <- bind_rows(object, upd_dat[is.na(old_recs), ]) %>%
-    arrange(orgname, iconic_taxon, sci_name, -as.numeric(date))
+    arrange(.data$orgname, .data$iconic_taxon,
+            .data$sci_name, -as.numeric(.data$date))
   attr(object, "query_dt") <- attr(upd_dat, "query_dt")
 
   object

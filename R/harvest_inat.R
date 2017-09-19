@@ -51,18 +51,18 @@ harvest_inat <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
 
       if (!is.null(nwrs_obs))
         nwrs_obs <- nwrs_obs %>%
-          mutate(obs_id = as.integer(sub(".*observations/", "", url))) %>%
-          pull(obs_id)
+          mutate(obs_id = as.integer(sub(".*observations/", "", .data$url))) %>%
+          pull(.data$obs_id)
       else
         nwrs_obs <- integer()
 
       add_obs <- retrieve_inat(i, inat_proj = NULL, verbose = FALSE) %>%
-          mutate(obs_id = as.integer(sub(".*observations/", "", url)))
+          mutate(obs_id = as.integer(sub(".*observations/", "", .data$url)))
 
       user_obs <- add_obs %>%
-        select(obs_id, user)
+        select(.data$obs_id, .data$user)
 
-      add_obs <- add_obs %>% pull(obs_id) %>% setdiff(nwrs_obs)
+      add_obs <- add_obs %>% pull(.data$obs_id) %>% setdiff(nwrs_obs)
 
     } else add_obs <- integer(0)
 
@@ -108,7 +108,7 @@ harvest_inat <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
       })
 
       bind_rows(ref_out) %>%
-        filter(http_error) %>%
+        filter(.data$http_error) %>%
         left_join(user_obs, by = c("observation_id" = "obs_id"))
 
     } else NULL

@@ -33,7 +33,7 @@ export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose 
 
   # Drop orgname from output
   is_assign <- "orgname" %in% names(fwsinat)
-  if (is_assign) fwsinat <- select(fwsinat, -orgname)
+  if (is_assign) fwsinat <- select(fwsinat, -.data$orgname)
 
   oldOpt <- options("openxlsx.dateFormat" = "yyyy-mm-dd")
   on.exit(options(oldOpt))
@@ -41,8 +41,8 @@ export_inat <- function (fwsinat, dir = NULL, xl_out, overwrite = TRUE, verbose 
   # Identify iNaturalist hyperlink column and round lat/lon
   class(fwsinat$url) <- "hyperlink"
   fwsinat <- mutate(fwsinat,
-                    lat = round(lat, 4),
-                    lon = round(lon, 4))
+                    lat = round(.data$lat, 4),
+                    lon = round(.data$lon, 4))
 
   wb <- createWorkbook()
   urls <- which(names(fwsinat) == "url")

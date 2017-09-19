@@ -17,6 +17,7 @@ Imports:
     jsonlite (>= 1.5),
     methods,
     openxlsx (>= 4.0.17),
+    rlang (>= 0.1.2),
     tools,
     utils
 Suggests:
