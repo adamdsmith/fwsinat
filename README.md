@@ -1,6 +1,8 @@
 
 [![Build Status](https://travis-ci.org/adamdsmith/fwsinat.png)](https://travis-ci.org/adamdsmith/fwsinat)
 
+    ## Warning: package 'dplyr' was built under R version 3.4.1
+
 USFWS Disclaimer
 ================
 
@@ -32,75 +34,158 @@ The `fwsinat` package
 
 This packages currently contains functions to:
 
-1.  download iNaturalist observations for any number of iNaturalist projects (`retrieve_inat`);
-2.  (optionally) assign those observation to the USFWS property in which they occur (`assign_inat`);
-3.  update previously retrieved observations from iNaturalist projects (`update`); and
-4.  export the observations to separate spreadsheets by USFWS property for distribution (`export_inat`);
+1.  retrieve iNaturalist observations for any number of available USFWS properties (`retrieve_inat`);
+2.  update previously retrievals of observations (`update`);
+3.  export the observations to separate spreadsheets by USFWS property for distribution (`export_inat`); and
+4.  harvest observations on USFWS properties into the [USFWS NWRS iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system) (`harvest_inat`)
 
 Using `fwsinat`
 ===============
 
-First, lets specify some iNaturalist projects (sometimes called 'slugs') from which to retrieve data...
+The first step to using `fwsinat` is to generate a list of USFWS properties from which you'd like to retrieve observations. This can be done using the `find_refuges` function, which accepts as input a vector of strings you expect will return your desired refuge(s). The `find_refuges` function is case-insensitive and works with partial matches. For example, if we're interested in retrieving observations on Merritt Island, Loxahatchee, and Chassahowitzka NWRs, we can input a vector of strings we think are adequate to return those refuges:
 
 ``` r
-slugs <- c("bon-secour-national-wildlife-refuge-bioblitz",
-           "2012-bioblitz-at-don-edwards-san-francisco-bay-national-wildlife-refuge",
-           "antioch-dunes-national-wildlife-refuge-bioblitz")
+refs <- c("merritt", "lox", "chass")
+(refs <- find_refuges(refs))
 ```
 
-Now let's retrieve the observations from iNaturalist...
+    ## [1] "MERRITT ISLAND NATIONAL WILDLIFE REFUGE"                
+    ## [2] "ARTHUR R. MARSHALL LOXAHATCHEE NATIONAL WILDLIFE REFUGE"
+    ## [3] "CHASSAHOWITZKA NATIONAL WILDLIFE REFUGE"
+
+Success! Note that some searches will return multiple matches that you may not be seeking. If we're interested in Hatchie NWR, for example:
 
 ``` r
-ex <- retrieve_inat(slugs)
+(hatchie <- find_refuges("hatchie"))
 ```
 
-    ## Processing iNaturalist project: bon-secour-national-wildlife-refuge-bioblitz
+    ## [1] "HATCHIE NATIONAL WILDLIFE REFUGE"      
+    ## [2] "LOWER HATCHIE NATIONAL WILDLIFE REFUGE"
+    ## [3] "TALLAHATCHIE NATIONAL WILDLIFE REFUGE"
 
-    ## Retrieving 188 records.
+Three matches! No worries! We can either select the one we want *ex post facto* or use regular expressions to narrow the matches:
+
+``` r
+## Narrow the search after the fact
+(hatchie <- hatchie[1])
+```
+
+    ## [1] "HATCHIE NATIONAL WILDLIFE REFUGE"
+
+``` r
+# Narrow the search with regular expressions
+# In this case, require the property to start with "Hatchie"
+(hatchie <- find_refuges("^hatchie"))
+```
+
+    ## [1] "HATCHIE NATIONAL WILDLIFE REFUGE"
+
+There are a couple more options to the `find_refuges` function to help you narrow your search; use `?find_refuges` for more information. By default, `find_refuges` returns **ALL** available USFWS properties.
+
+Now let's pick a refuge and retrieve the observations from iNaturalist... `retrieve_inat` is our friend. Before we do so, however, we need to decide on a few options:
+
+1.  Do we want all iNaturalist observations on the property or only those from a specific project?
+
+By default, `retrieve_inat` returns only observations associated with the [USFWS National Wildlife Refuge System iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system). If you want a different project, you'll need to specify which one with the `inat_proj` argument (see `?retrieve_inat` for guidance on what's expected). If you want **ALL** observations, use `inat_proj = NULL` (see below).
+
+1.  Do we want to limit the dates of those observations?
+
+By default, `retrieve_inat` does not limit retrievals by date range. See `?retrieve_inat` for guidance if this is of interest.
+
+1.  Do we want helpful messages during the retrieval?
+
+Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `retrieve_inat`.
+
+``` r
+musc <- find_refuges("musc")
+
+# Get observations on Muscatatuck NWR only from the USFWS NWRS project
+muscatatuck <- retrieve_inat(musc)
+```
+
+    ## Processing Muscatatuck National Wildlife Refuge within the
+    ## usfws-national-wildlife-refuge-system project.
+
+    ## Retrieving 12 records.
 
     ## Records retrieved: 
-    ##   0-188
-
-    ## Processing iNaturalist project: 2012-bioblitz-at-don-edwards-san-francisco-bay-national-wildlife-refuge
-
-    ## Retrieving 283 records.
-
-    ## Records retrieved: 
-    ##   0-200-283
-
-    ## Processing iNaturalist project: antioch-dunes-national-wildlife-refuge-bioblitz
-
-    ## Retrieving 159 records.
-
-    ## Records retrieved: 
-    ##   0-159
-
-    ## Retained 568 georeferenced iNaturalist records.
-
-and assign them to a refuge based on their geographic location...
-
-Some (occasionally many) observations may not fall within a USFWS property boundary because the location information is obscured, either by the user or by [iNaturalist (for IUCN Red List 'near-threatened' and higher risk)](http://www.inaturalist.org/pages/help#obscured). These we assume (perhaps incorrectly?) belong to the nearest USFWS property. Other observations falling outside property boundaries and *not* indicated to have obscured coordinates are dropped.
+    ##   0-12
 
 ``` r
-ex <- assign_inat(ex, progress = FALSE)
+# Get all observations on Muscatatuck NWR
+musc_all <- retrieve_inat(musc, inat_proj = NULL)
 ```
 
-    ## 513 observations successfully assigned to an USFWS property.
+    ## Processing Muscatatuck National Wildlife Refuge across all
+    ## iNaturalist projects.
 
-    ## Retrieving nearest USFWS property for 4 observations with obscured locational coordinates.
+    ## Retrieving 25 records.
 
-    ## 51 observations have been discarded.
+    ## Records retrieved: 
+    ##   0-25
 
-This object contains observations for potentially many refuges. We want to distribute these observations to USFWS property-specific spreadsheets for distribution to those properties. First, we create a list of properties with observations and then loop through them...
+In this case, we've retrieved observations only for a single refuge but we could just as easily retrieved from multiple refuges:
 
 ``` r
-orgs <- unique(ex$orgname)
-for (org in orgs) {
-  tmp_ex <- dplyr::filter(ex, orgname == org)
-  export_inat(tmp_ex, dir = "./Output", xl_out = org)
-}
+in_ky <- find_refuges(c("patoka river", "musc", "big oaks", "clarks river"))
+
+# Get all observations from Indiana and Kentucky refuges
+in_ky <- retrieve_inat(in_ky, inat_proj = NULL)
 ```
 
-    ## Processing ANTIOCH DUNES NWR...  ANTIOCH_DUNES_NWR.xlsx successfully created.
-    ## Processing BON SECOUR NWR...  BON_SECOUR_NWR.xlsx successfully created.
-    ## Processing DON EDWARDS SAN FRANCISCO BAY NWR...  DON_EDWARDS_SAN_FRANCISCO_BAY_NWR.xlsx successfully created.
+From our Muscatatuck example, we notice there are 13 observations on the refuge that do not belong to the USFWS NWRS project. We want those observations! We can try and harvest them with `harvest_inat`, although this will require you to have registered with []() and to pass your username and password. It may be best to leave this to USFWS NWRS project administrators. We illustrate it here with hidden credentials to prove the point, however.
+
+``` r
+out <- harvest_inat(musc, user = Sys.getenv("user"), pw = Sys.getenv("pw"), interactive = FALSE)
+```
+
+    ## 13 observations available for harvest on Muscatatuck National Wildlife Refuge.
+
+Occasionally observations cannot be harvested because the user restricts their observations. If this happens, you will recieve a message indicating how many records could not be harvested, and you can explore details of those observations by printing the object you just created. In this case, that object was called `out` and it is empty because all 13 observations were successfully harvested.
+
+``` r
+out
+```
+
+    ## [1] orgname        observation_id http_error     error_msg     
+    ## [5] user          
+    ## <0 rows> (or 0-length row.names)
+
+``` r
+# USFWS NWRS project now contains all observations
+muscatatuck <- retrieve_inat(musc)
+```
+
+    ## Processing Muscatatuck National Wildlife Refuge within the
+    ## usfws-national-wildlife-refuge-system project.
+
+    ## Retrieving 25 records.
+
+    ## Records retrieved: 
+    ##   0-25
+
+It would be handy to update these observations periodically, and the `update` function provides this option. For example, to update our Muscatuck records we would run `update` on the created `muscatuck` object:
+
+``` r
+muscatatuck <- update(muscatatuck)
+```
+
+    ## No updates available.
+
+In this case, no observations had been updated (e.g., another iNaturalist user had suggested an identification) and no new observation had been added. This isn't surprising given the short period between retrieval and update. Normally you'll want to save the record of observations locally and then update them some time later. For example:
+
+``` r
+saveRDS(muscatatuck, file = "SOME/PATH/TO/muscatatuck.rds")
+
+# Wait a few weeks or months and...
+muscatatuck <- readRDS("SOME/PATH/TO/muscatatuck.rds")
+muscatatuck <- update(muscatatuck)
+```
+
+Lastly, at least in Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `export_inat` function. You specify the output directory and `export_inat` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
+
+``` r
+export_inat(muscatatuck, dir = "C:/temp/test_export")
+```
+
+    ## Processing Muscatatuck National Wildlife Refuge...  Export successful.
