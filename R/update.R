@@ -41,11 +41,21 @@ update.fwsinat <- function(object, ...) {
   upd_dat <- lapply(refuge, function(i) {
     retrieve_inat(i, inat_proj, since_date = since_date, verbose = FALSE)
   })
+
   upd_dat <- bind_rows(upd_dat)
+
+  if (identical(upd_dat, tibble())) {
+    attr(object, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
+    attr(object, "query_dt") <- q_dt
+    message("No updates available.")
+    return(object)
+  }
+
+  # Check compatability before proceeding
+  stopifnot(identical(names(object), names(upd_dat)))
+
   attr(upd_dat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
   attr(upd_dat, "query_dt") <- q_dt
-
-  stopifnot(identical(names(object), names(upd_dat)))
 
   # Identify and remove original version of newly updated records
   upd_urls <- upd_dat$url
