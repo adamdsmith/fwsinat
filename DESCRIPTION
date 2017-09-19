@@ -6,7 +6,9 @@ Date: 2017-07-20
 Authors@R: c(person("Adam", "Smith", email = "adam_d_smith@fws.gov", role = c("aut", "cre")))
 Maintainer: Adam D. Smith <adam_d_smith@fws.gov>
 Description: Functions to retrieve iNaturalist observations on USFWS properties and process them
-    into an online database accessible and filterable by staff on those properties.
+    into refuge-specific spreadsheets for refuge staff. Also includes functionality to harvest
+    observations on USFWS properties into the USFWS National Wildlife Refuge System iNaturalist
+    project.
 Depends:
     R (>= 3.3),
     dplyr (>= 0.7.1)
@@ -17,8 +19,10 @@ Imports:
     openxlsx (>= 4.0.17),
     tools,
     utils
+Suggests:
+    pbapply (>= 1.3-3)
 Remotes:
-    adamdsmith/itistools,
+    adamdsmith/itistools
 License: CC0
 Copyright: This software is in the public domain because it contains materials
     that originally came from the United States Fish & Wildlife Service, an agency
