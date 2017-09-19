@@ -56,3 +56,11 @@ wrap_text <- function(...) {
   text <- list(...)
   text <- paste(text, collapse = " ")
   paste(strwrap(text), collapse = "\n")
+}
+
+empty_itis <- function() {
+  tibble(sci_name = NA_character_,
+         valid_sci_name = NA_character_,
+         itis_com_name = NA_character_,
+         itis_taxon_rank = NA_character_)
+}
