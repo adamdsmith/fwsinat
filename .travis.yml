@@ -13,13 +13,10 @@ matrix:
   include:
     - r: release
       r_github_packages: adamdsmith/itistools
-      r_github_packages: adamdsmith/nwrspp
     - r: devel
       r_github_packages: adamdsmith/itistools
-      r_github_packages: adamdsmith/nwrspp
     - r: oldrel
       r_github_packages: adamdsmith/itistools
-      r_github_packages: adamdsmith/nwrspp
 
 notifications:
   email:
