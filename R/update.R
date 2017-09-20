@@ -1,13 +1,12 @@
 #' Update previous retrieval of observations from an iNaturalist project
 #'
 #' Uses the query timestamp associated with the \code{fwsinat}
-#'  \code{object} to perform a new iNaturalist retrieval for the associated
+#'  object to perform a new iNaturalist retrieval for the associated
 #'  USFWS properties (and possibly project) and updates records that have
 #'  changed and adds records created since the previous query.
 #'
-#' @param object \code{fwsinat} object of iNaturalist observations
-#'  produced by \code{\link{retrieve_inat}}
-#' @param ... not used in this implementation
+#' @param fwsinat \code{fwsinat} \code{data.frame} of iNaturalist observations
+#'  produced by running \code{\link{retrieve_inat}}
 #'
 #' @return \code{fwsinat} object of iNaturalist observations associated
 #'  with one or more USFWS properties, and potentially an iNaturalist project.
@@ -26,16 +25,16 @@
 #'
 #' # Wait a while... hours, days, months... for users to update and add new
 #' # observations
-#' fws <- update(fws)
+#' fws <- update_inat(fws)
 #' }
 
-update.fwsinat <- function(object, ...) {
+update_inat <- function(fwsinat) {
 
-  old_q_dt <- attr(object, "query_dt")
+  old_q_dt <- attr(fwsinat, "query_dt")
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
-  inat_proj <- attr(object, "inat_proj")
+  inat_proj <- attr(fwsinat, "inat_proj")
   if (inat_proj == "all") inat_proj <- NULL
-  refuge <- sort(unique(object$orgname))
+  refuge <- sort(unique(fwsinat$orgname))
 
   q_dt <- Sys.time()
   upd_dat <- lapply(refuge, function(i) {
@@ -45,34 +44,34 @@ update.fwsinat <- function(object, ...) {
   upd_dat <- bind_rows(upd_dat)
 
   if (identical(upd_dat, tibble())) {
-    attr(object, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
-    attr(object, "query_dt") <- q_dt
+    attr(fwsinat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
+    attr(fwsinat, "query_dt") <- q_dt
     message("No updates available.")
-    return(object)
+    return(fwsinat)
   }
 
   # Check compatability before proceeding
-  stopifnot(identical(names(object), names(upd_dat)))
+  stopifnot(identical(names(fwsinat), names(upd_dat)))
 
   attr(upd_dat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
   attr(upd_dat, "query_dt") <- q_dt
 
   # Identify and remove original version of newly updated records
   upd_urls <- upd_dat$url
-  old_recs <- match(upd_urls, object$url)
+  old_recs <- match(upd_urls, fwsinat$url)
   upd_rows <- old_recs[!is.na(old_recs)]
 
   # Replace updated records
   message("Updated ", length(upd_rows), " existing records.")
-  object[upd_rows, ] <- upd_dat[!is.na(old_recs), ]
+  fwsinat[upd_rows, ] <- upd_dat[!is.na(old_recs), ]
 
   # Add new records
   message("Added ", sum(is.na(old_recs)), " new records.")
-  object <- bind_rows(object, upd_dat[is.na(old_recs), ]) %>%
+  fwsinat <- bind_rows(fwsinat, upd_dat[is.na(old_recs), ]) %>%
     arrange(.data$orgname, .data$iconic_taxon,
             .data$sci_name, -as.numeric(.data$date))
-  attr(object, "query_dt") <- attr(upd_dat, "query_dt")
+  attr(fwsinat, "query_dt") <- attr(upd_dat, "query_dt")
 
-  object
+  fwsinat
 
 }
