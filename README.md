@@ -124,7 +124,7 @@ dismal_all <- inat_retrieve(dis, inat_proj = NULL)
     ## Records retrieved: 
     ##   0-200-321
 
-**A BRIEF ASIDE**: In our Great Dismal Swamp example, we've retrieved observations only for a single refuge. We can just as easily retrieve observations from multiple refuges:
+**A BRIEF ASIDE**: In our Great Dismal Swamp example, we've retrieved observations only for a single refuge. We can just as easily retrieve observations from multiple refuges. Note that more refuges means more time to wait as they are processed.
 
 ``` r
 # Get all observations from a few refuges
@@ -188,15 +188,25 @@ dismal <- inat_retrieve(dis)
     ## Records retrieved: 
     ##   0-200-300
 
-It would be handy to update these observations periodically, and the `inat_update` function provides this option. For example, to update our Great Dismal Swamp records we would run `inat_update` on the created `dismal` object:
+In Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `inat_export` function. You specify the output directory and `inat_export` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
+
+``` r
+inat_export(dismal, dir = "C:/temp/test_export")
+```
+
+    ## Processing Great Dismal Swamp National Wildlife Refuge...  Export successful.
+
+Since these retrievals and exports are snapshots in time, it would be handy to update these observations periodically. The `inat_update` function provides this option. For example, to update our Great Dismal Swamp records we would run `inat_update` on the created `dismal` object:
 
 ``` r
 dismal <- inat_update(dismal)
 ```
 
-    ## No updates available.
+    ## Updated 1 existing records.
 
-In this case, no observations had been updated (e.g., another iNaturalist user had suggested an identification) and no new observation had been added. This isn't surprising given the short period between retrieval and update. Normally you'll want to save the record of observations locally and then update them some time later. For example:
+    ## Added 0 new records.
+
+In this case, only a single observations has been updated (e.g., another iNaturalist user had suggested an identification) and no new observation have been added. This isn't surprising given the short period between retrieval and update. Normally you'll want to save the record of observations locally and then update them some time later. For example:
 
 ``` r
 saveRDS(dismal, file = "SOME/PATH/TO/great_dismal.rds")
@@ -204,12 +214,5 @@ saveRDS(dismal, file = "SOME/PATH/TO/great_dismal.rds")
 # Wait a few weeks or months and...
 dismal <- readRDS("SOME/PATH/TO/great_dismal.rds")
 dismal <- inat_update(dismal)
-```
-
-Lastly, at least in Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `inat_export` function. You specify the output directory and `inat_export` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
-
-``` r
 inat_export(dismal, dir = "C:/temp/test_export")
 ```
-
-    ## Processing Great Dismal Swamp National Wildlife Refuge...  Export successful.
