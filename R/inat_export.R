@@ -1,7 +1,7 @@
 #' Export iNaturalist observations to Excel file(s) based on for assigned to FWS properties  refuges
 #'
 #' @param fwsinat \code{fwsinat} \code{data.frame} of iNaturalist observations
-#'  produced by running \code{\link{retrieve_inat}}
+#'  produced by running \code{\link{inat_retrieve}}
 #' @param dir a non-empty character scalar giving the directory within which to store
 #'  exported spreadsheets
 #' @param overwrite logical (default \code{TRUE}) indicating whether to overwrite an existing file
@@ -14,14 +14,14 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' fws <- retrieve_inat()
-#' export_inat(fws, "./fws.xlsx")
+#' fws <- inat_retrieve()
+#' inat_export(fws, "./fws.xlsx")
 #' }
 
-export_inat <- function (fwsinat, dir = NULL, overwrite = TRUE, verbose = TRUE) {
+inat_export <- function (fwsinat, dir = NULL, overwrite = TRUE, verbose = TRUE) {
 
   if (!inherits(fwsinat, "fwsinat")) stop("This function is intended for use ",
-                                          "only with `fwsinat` objects. See `?retrieve_inat`.")
+                                          "only with `fwsinat` objects. See `?inat_retrieve`.")
 
   if (is.null(dir)) stop("You must specify and output directory.\n",
                          "If it does not exist it will be created.")

@@ -11,7 +11,7 @@ find_refuges(refuge = NULL, ptype = c("NWR", "WMD", "WMA", "WPA"),
 \item{refuge}{character string scalar or vector (i.e., multiple entries allowed and
 regular expressions allowed) with
 which to search and return valid refuge identifiers for use with
-\code{\link{retrieve_inat}}. Default (`NULL`) returns all available refuges.
+\code{\link{inat_retrieve}}. Default (`NULL`) returns all available refuges.
 Case-insensitive search. Regular expressions allowed. See Examples.}
 
 \item{ptype}{character string scalar or vector of types of USFWS properties to search.
@@ -26,7 +26,7 @@ permissible.}
 \value{
 character scalar or vector of proper organizational name (ORGNAME) for USFWS
  properties meeting the search criteria.  This output can be passed directly as the
- \code{refuge} argument in \code{\link{retrieve_inat}}.
+ \code{refuge} argument in \code{\link{inat_retrieve}}.
 }
 \description{
 Find refuges or properties available for query.

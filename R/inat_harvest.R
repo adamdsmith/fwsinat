@@ -25,7 +25,7 @@
 #' ### CREATE A MEANINGFUL EXAMPLE
 #' }
 
-harvest_inat <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE) {
+inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE) {
 
   reqs <- list(user, pw)
   if (any(sapply(reqs, is.null),
@@ -47,7 +47,7 @@ harvest_inat <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
     all_obs <- GET_inat(place_id, proj = NULL, nrecs_only = TRUE, verbose = FALSE)
 
     if (all_obs > nwrs_obs) {
-      nwrs_obs <- retrieve_inat(i, verbose = FALSE)
+      nwrs_obs <- inat_retrieve(i, verbose = FALSE)
 
       if (!is.null(nwrs_obs))
         nwrs_obs <- nwrs_obs %>%
@@ -56,7 +56,7 @@ harvest_inat <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
       else
         nwrs_obs <- integer()
 
-      add_obs <- retrieve_inat(i, inat_proj = NULL, verbose = FALSE) %>%
+      add_obs <- inat_retrieve(i, inat_proj = NULL, verbose = FALSE) %>%
           mutate(obs_id = as.integer(sub(".*observations/", "", .data$url)))
 
       user_obs <- add_obs %>%

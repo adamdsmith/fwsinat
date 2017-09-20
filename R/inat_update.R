@@ -6,14 +6,14 @@
 #'  changed and adds records created since the previous query.
 #'
 #' @param fwsinat \code{fwsinat} \code{data.frame} of iNaturalist observations
-#'  produced by running \code{\link{retrieve_inat}}
+#'  produced by running \code{\link{inat_retrieve}}
 #'
 #' @return \code{fwsinat} object of iNaturalist observations associated
 #'  with one or more USFWS properties, and potentially an iNaturalist project.
 #'  These observations are joined, when possible, with ITIS
 #'  (\url{http://www.itis.gov}) information.
 #'
-#' @seealso \code{\link{retrieve_inat}} for details on making the initial
+#' @seealso \code{\link{inat_retrieve}} for details on making the initial
 #'  retrieval of iNaturalist observations
 #'
 #' @export
@@ -21,14 +21,14 @@
 #' \dontrun{
 #' # Default is to retrieve observations from the USFWS National Wildlife
 #' # Refuge System project on all available USFWS properties
-#' fws <- retrieve_inat()
+#' fws <- inat_retrieve()
 #'
 #' # Wait a while... hours, days, months... for users to update and add new
 #' # observations
-#' fws <- update_inat(fws)
+#' fws <- inat_update(fws)
 #' }
 
-update_inat <- function(fwsinat) {
+inat_update <- function(fwsinat) {
 
   old_q_dt <- attr(fwsinat, "query_dt")
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
@@ -38,7 +38,7 @@ update_inat <- function(fwsinat) {
 
   q_dt <- Sys.time()
   upd_dat <- lapply(refuge, function(i) {
-    retrieve_inat(i, inat_proj, since_date = since_date, verbose = FALSE)
+    inat_retrieve(i, inat_proj, since_date = since_date, verbose = FALSE)
   })
 
   upd_dat <- bind_rows(upd_dat)

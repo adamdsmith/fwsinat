@@ -39,27 +39,27 @@
 #'  and \code{inat_proj}, if any, and joined, when possible, with ITIS
 #'  (\url{http://www.itis.gov}) information
 #'
-#' @seealso \code{\link{update.fwsinat}} for updating a previous iNaturalist data retrieval
-#' @seealso \code{\link{export_inat}} for exporting an iNaturalist data retrieval
+#' @seealso \code{\link{inat_update}} for updating a previous iNaturalist data retrieval
+#' @seealso \code{\link{inat_export}} for exporting an iNaturalist data retrieval
 #'
 #' @export
 #' @examples
 #' \dontrun{
 #' # Default is to retrieve records for all available USFWS properties from the USFWS
 #' # National Wildlife Refuge System projects
-#' fws <- retrieve_inat()
-#' fws_july17 <- retrieve_inat(d1 = "2017-07-01", d2 = "2017-07-31")
+#' fws <- inat_retrieve()
+#' fws_july17 <- inat_retrieve(d1 = "2017-07-01", d2 = "2017-07-31")
 #'
 #' # But it works with other projects too
 #' bon <- find_refuges("bon secour")
-#' bs <- retrieve_inat(bon, "bon-secour-national-wildlife-refuge-bioblitz")
+#' bs <- inat_retrieve(bon, "bon-secour-national-wildlife-refuge-bioblitz")
 #'
 #' # Or get all available iNaturalist observations on the property
 #' bon <- find_refuges("bon secour")
-#' bs_all <- retrieve_inat(bon, inat_proj = NULL)
+#' bs_all <- inat_retrieve(bon, inat_proj = NULL)
 #' }
 
-retrieve_inat <- function(refuge = NULL,
+inat_retrieve <- function(refuge = NULL,
                           inat_proj = "usfws-national-wildlife-refuge-system",
                           d1 = NULL, d2 = NULL, since_date = NULL,
                           multipart = FALSE, verbose = TRUE) {
