@@ -45,12 +45,12 @@ inat_export <- function (fwsinat, dir = NULL, overwrite = TRUE, verbose = TRUE) 
   lapply(orgs, function(org) {
     org_dat <- filter(fwsinat, .data$orgname == org)
     nm <- unique(org_dat$name)
-    org_dat <- select(org_dat, -.data$orgname, -.data$name)
+    org_dat <- select(org_dat, -.data$name)
     wb <- createWorkbook()
     urls <- which(names(org_dat) == "url")
     addWorksheet(wb, "fwsinat Output")
 
-    col_widths <- c(rep(25, 3), rep(16, 2), rep(13, 2), rep(9, 2), 13, 16, 10, rep(16, 2))
+    col_widths <- c(rep(25, 4), rep(16, 2), rep(13, 2), rep(9, 2), 13, 16, 10, rep(16, 2))
     setColWidths(wb, 1, cols = seq_along(org_dat), widths = col_widths)
     freezePane(wb, 1, firstRow = TRUE)
 
