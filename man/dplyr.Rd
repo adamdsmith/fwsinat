@@ -2,40 +2,24 @@
 % Please edit documentation in R/tidyverse.R
 \name{dplyr}
 \alias{dplyr}
-\alias{filter_.fwsinat}
-\alias{dplyr}
 \alias{filter.fwsinat}
-\alias{dplyr}
-\alias{arrange_.fwsinat}
 \alias{dplyr}
 \alias{arrange.fwsinat}
 \alias{dplyr}
-\alias{mutate_.fwsinat}
-\alias{dplyr}
 \alias{mutate.fwsinat}
-\alias{dplyr}
-\alias{select_.fwsinat}
 \alias{dplyr}
 \alias{select.fwsinat}
 \alias{dplyr}
 \alias{left_join.fwsinat}
 \title{Dplyr verb methods for fwsinat objects}
 \usage{
-\method{filter_}{fwsinat}(.data, ..., .dots)
+\method{filter}{fwsinat}(.data, ...)
 
-\method{filter}{fwsinat}(.data, ..., .dots)
+\method{arrange}{fwsinat}(.data, ...)
 
-\method{arrange_}{fwsinat}(.data, ..., .dots)
+\method{mutate}{fwsinat}(.data, ...)
 
-\method{arrange}{fwsinat}(.data, ..., .dots)
-
-\method{mutate_}{fwsinat}(.data, ..., .dots)
-
-\method{mutate}{fwsinat}(.data, ..., .dots)
-
-\method{select_}{fwsinat}(.data, ..., .dots)
-
-\method{select}{fwsinat}(.data, ..., .dots)
+\method{select}{fwsinat}(.data, ...)
 
 \method{left_join}{fwsinat}(x, y, by = NULL, copy = FALSE,
   suffix = c(".x", ".y"), ...)
@@ -44,8 +28,6 @@
 \item{.data}{data object of class \link{fwsinat}}
 
 \item{...}{other arguments}
-
-\item{.dots}{see corresponding function in package \code{dplyr}}
 
 \item{x}{see \link[dplyr]{left_join}}
 

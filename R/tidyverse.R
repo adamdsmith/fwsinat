@@ -3,47 +3,30 @@
 #' Dplyr verb methods for fwsinat objects
 #'
 #' @param .data data object of class \link{fwsinat}
-#' @param .dots see corresponding function in package \code{dplyr}
 #' @param ... other arguments
 #' @name dplyr
 #' @export
-filter_.fwsinat <- function(.data, ..., .dots) {
+filter.fwsinat <- function(.data, ...) {
   as_fwsinat(NextMethod())
 }
 
 #' @name dplyr
 #' @export
-filter.fwsinat <- filter_.fwsinat
-
-#' @name dplyr
-#' @export
-arrange_.fwsinat <- function(.data, ..., .dots) {
+arrange.fwsinat <- function(.data, ...) {
   as_fwsinat(NextMethod())
 }
 
 #' @name dplyr
 #' @export
-arrange.fwsinat <- arrange_.fwsinat
-
-#' @name dplyr
-#' @export
-mutate_.fwsinat <- function(.data, ..., .dots) {
+mutate.fwsinat <- function(.data, ...) {
   as_fwsinat(NextMethod())
 }
 
 #' @name dplyr
 #' @export
-mutate.fwsinat <- mutate_.fwsinat
-
-#' @name dplyr
-#' @export
-select_.fwsinat <- function(.data, ..., .dots) {
+select.fwsinat <- function(.data, ...) {
   as_fwsinat(NextMethod())
 }
-
-#' @name dplyr
-#' @export
-select.fwsinat <- select_.fwsinat
 
 #' @name dplyr
 #' @param x see \link[dplyr]{left_join}
