@@ -84,15 +84,15 @@ Now let's pick a refuge and retrieve the observations from iNaturalist... `inat_
 
 1.  Do we want all iNaturalist observations on the property or only those from a specific project?
 
-By default, `inat_retrieve` returns only observations associated with the [USFWS National Wildlife Refuge System iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system). If you want a different project, you'll need to specify which one with the `inat_proj` argument (see `?inat_retrieve` for guidance on what's expected). If you want **ALL** observations, use `inat_proj = NULL` (see below).
+    By default, `inat_retrieve` returns only observations associated with the [USFWS National Wildlife Refuge System iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system). If you want a different project, you'll need to specify which one with the `inat_proj` argument (see `?inat_retrieve` for guidance on what's expected). If you want **ALL** observations, use `inat_proj = NULL` (see below).
 
-1.  Do we want to limit the dates of those observations?
+2.  Do we want to limit the dates of those observations?
 
-By default, `inat_retrieve` does not limit retrievals by date range. See `?inat_retrieve` for guidance if this is of interest.
+    By default, `inat_retrieve` does not limit retrievals by date range. See `?inat_retrieve` for guidance if this is of interest.
 
-1.  Do we want helpful messages during the retrieval?
+3.  Do we want helpful messages during the retrieval?
 
-Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `inat_retrieve`.
+    Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `inat_retrieve`.
 
 ``` r
 dis <- find_refuges("dismal")
