@@ -11,7 +11,9 @@ Installing `fwsinat`
 
 The `fwsinat` package requires you to have [R](https://www.r-project.org/) (&gt;= 3.3) installed on your computer as well as [Rtools](https://cran.r-project.org/bin/windows/Rtools/). Both will require administrative priveleges but the installation of packages after this initial install will not.
 
-With R and Rtools installed, it's simple to install and load the `fwsinat` package to access its functionality. If you receive an SSL or CA Certificate error, you may need to take the extra step documented below.
+With R and Rtools installed, it's simple to install and load the `fwsinat` package to access its functionality.
+
+**NOTE**: If you receive a SSL or CA Certificate error, you may need to take the extra step documented below.
 
     # If devtools package is not installed
     install.packages("devtools", dependencies = TRUE)
@@ -32,8 +34,8 @@ The `fwsinat` package
 
 This packages currently contains functions to:
 
-1.  retrieve iNaturalist observations for any number of available USFWS properties (`inat_retrieve`);
-2.  update previously retrievals of observations (`inat_update`);
+1.  retrieve iNaturalist observations for any number of available USFWS properties (`inat_retrieve`), the valid names of which can be obtained with the `find_refuges` function;
+2.  update previous retrievals of observations (`inat_update`);
 3.  export the observations to separate spreadsheets by USFWS property for distribution (`inat_export`); and
 4.  harvest observations on USFWS properties into the [USFWS NWRS iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system) (`inat_harvest`)
 
@@ -92,7 +94,7 @@ Now let's pick a refuge and retrieve the observations from iNaturalist... `inat_
 
 3.  Do we want helpful messages during the retrieval?
 
-    Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `inat_retrieve`.
+    Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minimum by passing `verbose = FALSE` to `inat_retrieve`.
 
 ``` r
 dis <- find_refuges("dismal")
@@ -122,16 +124,19 @@ dismal_all <- inat_retrieve(dis, inat_proj = NULL)
     ## Records retrieved: 
     ##   0-200-321
 
-In this case, we've retrieved observations only for a single refuge but we could just as easily retrieved from multiple refuges:
+**A BRIEF ASIDE**: In our Great Dismal Swamp example, we've retrieved observations only for a single refuge. We can just as easily retrieve observations from multiple refuges:
 
 ``` r
+# Get all observations from a few refuges
 multi <- find_refuges(c("dismal", "mackay", "currituck", "back bay"))
-
-# Get all observations from these refuges
 multi <- inat_retrieve(multi, inat_proj = NULL)
+
+# Get USFWS NWRS project observation from all Region 4 (Southeast) refuges
+r4 <- find_refuges(region = 4)
+r4 <- inat_retrieve(r4)
 ```
 
-From our Great Dismal Swamp example, we notice there are **nearly 300** observations on the refuge that do not belong to the USFWS NWRS project. We want those observations! We can try and harvest them with `inat_harvest`, although this will require you to have an [iNaturalist](http://www.inaturalist.org/) account and to pass your username and password. It may be best to leave this to USFWS NWRS project administrators. We illustrate it here with hidden credentials to prove the point, however. Some useful information on options for storing and using your webservice credentials in R is available [here](http://blog.revolutionanalytics.com/2015/11/how-to-store-and-use-authentication-details-with-r.html).
+Returning to our Great Dismal Swamp example, we notice there are **nearly 300** observations on the refuge that do not belong to the USFWS NWRS project. We want those observations! We can try and harvest them with `inat_harvest`, although this will require you to have an [iNaturalist](http://www.inaturalist.org/) account and to pass your username and password. It may be best to leave this to USFWS NWRS project administrators. We illustrate it here with hidden credentials to prove the point, however. Some useful information on options for storing and using your webservice credentials in R is available [here](http://blog.revolutionanalytics.com/2015/11/how-to-store-and-use-authentication-details-with-r.html).
 
 ``` r
 out <- inat_harvest(dis, user = Sys.getenv("user"), pw = Sys.getenv("pw"), interactive = FALSE)
