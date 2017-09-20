@@ -1,8 +1,6 @@
 
 [![Build Status](https://travis-ci.org/adamdsmith/fwsinat.png)](https://travis-ci.org/adamdsmith/fwsinat)
 
-    ## Warning: package 'dplyr' was built under R version 3.4.1
-
 USFWS Disclaimer
 ================
 
@@ -34,10 +32,10 @@ The `fwsinat` package
 
 This packages currently contains functions to:
 
-1.  retrieve iNaturalist observations for any number of available USFWS properties (`retrieve_inat`);
-2.  update previously retrievals of observations (`update`);
-3.  export the observations to separate spreadsheets by USFWS property for distribution (`export_inat`); and
-4.  harvest observations on USFWS properties into the [USFWS NWRS iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system) (`harvest_inat`)
+1.  retrieve iNaturalist observations for any number of available USFWS properties (`inat_retrieve`);
+2.  update previously retrievals of observations (`inat_update`);
+3.  export the observations to separate spreadsheets by USFWS property for distribution (`inat_export`); and
+4.  harvest observations on USFWS properties into the [USFWS NWRS iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system) (`inat_harvest`)
 
 Using `fwsinat`
 ===============
@@ -82,92 +80,113 @@ Three matches! No worries! We can either select the one we want *ex post facto* 
 
 There are a couple more options to the `find_refuges` function to help you narrow your search; use `?find_refuges` for more information. By default, `find_refuges` returns **ALL** available USFWS properties.
 
-Now let's pick a refuge and retrieve the observations from iNaturalist... `retrieve_inat` is our friend. Before we do so, however, we need to decide on a few options:
+Now let's pick a refuge and retrieve the observations from iNaturalist... `inat_retrieve` is our friend. Before we do so, however, we need to decide on a few options:
 
 1.  Do we want all iNaturalist observations on the property or only those from a specific project?
 
-By default, `retrieve_inat` returns only observations associated with the [USFWS National Wildlife Refuge System iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system). If you want a different project, you'll need to specify which one with the `inat_proj` argument (see `?retrieve_inat` for guidance on what's expected). If you want **ALL** observations, use `inat_proj = NULL` (see below).
+By default, `inat_retrieve` returns only observations associated with the [USFWS National Wildlife Refuge System iNaturalist project](https://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system). If you want a different project, you'll need to specify which one with the `inat_proj` argument (see `?inat_retrieve` for guidance on what's expected). If you want **ALL** observations, use `inat_proj = NULL` (see below).
 
 1.  Do we want to limit the dates of those observations?
 
-By default, `retrieve_inat` does not limit retrievals by date range. See `?retrieve_inat` for guidance if this is of interest.
+By default, `inat_retrieve` does not limit retrievals by date range. See `?inat_retrieve` for guidance if this is of interest.
 
 1.  Do we want helpful messages during the retrieval?
 
-Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `retrieve_inat`.
+Generally these are useful to track progress, so the default is to print these messages. If they annoy you, you can reduce them to a minumum by passing `verbose = FALSE` to `inat_retrieve`.
 
 ``` r
-musc <- find_refuges("musc")
+dis <- find_refuges("dismal")
 
-# Get observations on Muscatatuck NWR only from the USFWS NWRS project
-muscatatuck <- retrieve_inat(musc)
+# Get observations on Great Dismal Swamp NWR only from the USFWS NWRS project
+dismal <- inat_retrieve(dis)
 ```
 
-    ## Processing Muscatatuck National Wildlife Refuge within the
+    ## Processing Great Dismal Swamp National Wildlife Refuge within the
     ## usfws-national-wildlife-refuge-system project.
 
-    ## Retrieving 12 records.
+    ## Retrieving 32 records.
 
     ## Records retrieved: 
-    ##   0-12
+    ##   0-32
 
 ``` r
-# Get all observations on Muscatatuck NWR
-musc_all <- retrieve_inat(musc, inat_proj = NULL)
+# Get all observations on Great Dismal Swamp NWR
+dismal_all <- inat_retrieve(dis, inat_proj = NULL)
 ```
 
-    ## Processing Muscatatuck National Wildlife Refuge across all
+    ## Processing Great Dismal Swamp National Wildlife Refuge across all
     ## iNaturalist projects.
 
-    ## Retrieving 25 records.
+    ## Retrieving 321 records.
 
     ## Records retrieved: 
-    ##   0-25
+    ##   0-200-321
 
 In this case, we've retrieved observations only for a single refuge but we could just as easily retrieved from multiple refuges:
 
 ``` r
-in_ky <- find_refuges(c("patoka river", "musc", "big oaks", "clarks river"))
+multi <- find_refuges(c("dismal", "mackay", "currituck", "back bay"))
 
-# Get all observations from Indiana and Kentucky refuges
-in_ky <- retrieve_inat(in_ky, inat_proj = NULL)
+# Get all observations from these refuges
+multi <- inat_retrieve(multi, inat_proj = NULL)
 ```
 
-From our Muscatatuck example, we notice there are 13 observations on the refuge that do not belong to the USFWS NWRS project. We want those observations! We can try and harvest them with `harvest_inat`, although this will require you to have registered with []() and to pass your username and password. It may be best to leave this to USFWS NWRS project administrators. We illustrate it here with hidden credentials to prove the point, however.
+From our Great Dismal Swamp example, we notice there are **nearly 300** observations on the refuge that do not belong to the USFWS NWRS project. We want those observations! We can try and harvest them with `inat_harvest`, although this will require you to have an [iNaturalist](http://www.inaturalist.org/) account and to pass your username and password. It may be best to leave this to USFWS NWRS project administrators. We illustrate it here with hidden credentials to prove the point, however. Some useful information on options for storing and using your webservice credentials in R is available [here](http://blog.revolutionanalytics.com/2015/11/how-to-store-and-use-authentication-details-with-r.html).
 
 ``` r
-out <- harvest_inat(musc, user = Sys.getenv("user"), pw = Sys.getenv("pw"), interactive = FALSE)
+out <- inat_harvest(dis, user = Sys.getenv("user"), pw = Sys.getenv("pw"), interactive = FALSE)
 ```
 
-    ## 13 observations available for harvest on Muscatatuck National Wildlife Refuge.
+    ## 289 observations available for harvest on Great Dismal Swamp National Wildlife Refuge.
 
-Occasionally observations cannot be harvested because the user restricts their observations. If this happens, you will recieve a message indicating how many records could not be harvested, and you can explore details of those observations by printing the object you just created. In this case, that object was called `out` and it is empty because all 13 observations were successfully harvested.
+    ## Failed to harvest 21 observations due to errors.
+
+Occasionally observations cannot be harvested because the user restricts their observations. If this happens, you will receive a message indicating how many records could not be harvested (21 in the case of Great Dismal Swamp), and you can explore details of those observations by printing the object you just created. In this case, that object was called `out` and it looks like these 21 observations are restricted by the users.
 
 ``` r
-out
+# See first 6 harvest errors
+head(out)
 ```
 
-    ## [1] orgname        observation_id http_error     error_msg     
-    ## [5] user          
-    ## <0 rows> (or 0-length row.names)
+    ##                                       orgname observation_id http_error
+    ## 1 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091064       TRUE
+    ## 2 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091063       TRUE
+    ## 3 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091051       TRUE
+    ## 4 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091089       TRUE
+    ## 5 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091092       TRUE
+    ## 6 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091084       TRUE
+    ##                                                           error_msg
+    ## 1 Submitter does not allow addition to projects they haven't joined
+    ## 2 Submitter does not allow addition to projects they haven't joined
+    ## 3 Submitter does not allow addition to projects they haven't joined
+    ## 4 Submitter does not allow addition to projects they haven't joined
+    ## 5 Submitter does not allow addition to projects they haven't joined
+    ## 6 Submitter does not allow addition to projects they haven't joined
+    ##         user
+    ## 1 botanygirl
+    ## 2 botanygirl
+    ## 3 botanygirl
+    ## 4 botanygirl
+    ## 5 botanygirl
+    ## 6 botanygirl
 
 ``` r
-# USFWS NWRS project now contains all observations
-muscatatuck <- retrieve_inat(musc)
+# USFWS NWRS project now contains all currently harvestable observations
+dismal <- inat_retrieve(dis)
 ```
 
-    ## Processing Muscatatuck National Wildlife Refuge within the
+    ## Processing Great Dismal Swamp National Wildlife Refuge within the
     ## usfws-national-wildlife-refuge-system project.
 
-    ## Retrieving 25 records.
+    ## Retrieving 300 records.
 
     ## Records retrieved: 
-    ##   0-25
+    ##   0-200-300
 
-It would be handy to update these observations periodically, and the `update` function provides this option. For example, to update our Muscatuck records we would run `update` on the created `muscatuck` object:
+It would be handy to update these observations periodically, and the `inat_update` function provides this option. For example, to update our Great Dismal Swamp records we would run `inat_update` on the created `dismal` object:
 
 ``` r
-muscatatuck <- update(muscatatuck)
+dismal <- inat_update(dismal)
 ```
 
     ## No updates available.
@@ -175,17 +194,17 @@ muscatatuck <- update(muscatatuck)
 In this case, no observations had been updated (e.g., another iNaturalist user had suggested an identification) and no new observation had been added. This isn't surprising given the short period between retrieval and update. Normally you'll want to save the record of observations locally and then update them some time later. For example:
 
 ``` r
-saveRDS(muscatatuck, file = "SOME/PATH/TO/muscatatuck.rds")
+saveRDS(dismal, file = "SOME/PATH/TO/great_dismal.rds")
 
 # Wait a few weeks or months and...
-muscatatuck <- readRDS("SOME/PATH/TO/muscatatuck.rds")
-muscatatuck <- update(muscatatuck)
+dismal <- readRDS("SOME/PATH/TO/great_dismal.rds")
+dismal <- inat_update(dismal)
 ```
 
-Lastly, at least in Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `export_inat` function. You specify the output directory and `export_inat` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
+Lastly, at least in Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `inat_export` function. You specify the output directory and `inat_export` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
 
 ``` r
-export_inat(muscatatuck, dir = "C:/temp/test_export")
+inat_export(dismal, dir = "C:/temp/test_export")
 ```
 
-    ## Processing Muscatatuck National Wildlife Refuge...  Export successful.
+    ## Processing Great Dismal Swamp National Wildlife Refuge...  Export successful.
