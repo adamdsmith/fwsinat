@@ -26,8 +26,8 @@
 #'  Specifying only \code{d2} returns all records on and before \code{d2}.
 #' @param since_date string with ISO 8601 datetime (e.g. "2017-07-04" or
 #'  "2017-07-04T13:40:13-05:00"). Only records added or updated on iNaturalist after
-#'  this date will be returned. Primarily intended to be used internally from
-#'  \code{\link{update.fwsinat}}.
+#'  this date will be returned. Primarily intended for internals use from
+#'  \code{\link{inat_update}}.
 #' @param multipart logical (default \code{FALSE}) indicating whether the current retrieval
 #'  is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the current
 #'  system time is recorded as the the \code{query_dt} attribute of the resulting
