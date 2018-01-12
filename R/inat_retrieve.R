@@ -64,7 +64,15 @@ inat_retrieve <- function(refuge = NULL,
                           d1 = NULL, d2 = NULL, since_date = NULL,
                           multipart = FALSE, verbose = TRUE) {
 
-  if (is.null(refuge)) refuge <- fwsinat::find_refuges()
+  # Check refuge input
+  if (is.null(refuge)) refuge <- find_refuges()
+  else {
+    if (!is.character(refuge))
+      stop("Function is expecting an input string of valid refuge names. ",
+           "See `?find_refuges`.")
+    if (!any(refuge %in% find_refuges()))
+      stop("At least one refuge is not available for retrieval. See `?find_refuges`.")
+  }
   if (length(inat_proj) > 1) stop("Only a single iNaturalist project may be specified")
 
   q_dt <- Sys.time()

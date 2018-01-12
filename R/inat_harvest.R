@@ -28,13 +28,18 @@
 inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE) {
 
   reqs <- list(user, pw)
-  if (any(sapply(reqs, is.null),
-          sapply(reqs, function(i) !is.character(i))))
-    stop(
-      wrap_text("You must supply an iNaturalist username and password.")
-    )
+  if (any(sapply(reqs, function(i) is.null(i) | !is.character(i))))
+    stop("You must supply an iNaturalist username and password.")
 
-  if (is.null(refuge)) refuge <- fwsinat::find_refuges()
+  # Check refuge input
+  if (is.null(refuge)) refuge <- find_refuges()
+  else {
+    if (!is.character(refuge))
+      stop("Function is expecting an input string of valid refuge names. ",
+           "See `?find_refuges`.")
+    if (!any(refuge %in% find_refuges()))
+      stop("At least one refuge is not available for harvest. See `?find_refuges`.")
+  }
 
   out <- lapply(refuge, function(i) {
     r <- utils::read.csv(system.file("extdata", "fws_place_ids.csv", package = "fwsinat"),
