@@ -56,11 +56,13 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
     place_id <- r[r$orgname == i, "inat_place_id"]
 
     # Check necessity of harvest before pulling observations
-    nwrs_obs <- GET_inat(place_id, nrecs_only = TRUE, verbose = FALSE)
-    all_obs <- GET_inat(place_id, proj = NULL, nrecs_only = TRUE, verbose = FALSE)
+    try_GET_inat <- try_verb_n(GET_inat)
+    nwrs_obs <- try_GET_inat(place_id, nrecs_only = TRUE, verbose = FALSE)
+    all_obs <- try_GET_inat(place_id, proj = NULL, nrecs_only = TRUE, verbose = FALSE)
 
     if (all_obs > nwrs_obs) {
-      nwrs_obs <- inat_retrieve(i, verbose = FALSE)
+      try_inat_retrieve <- try_verb_n(inat_retrieve)
+      nwrs_obs <- try_inat_retrieve(i, verbose = FALSE)
 
       if (!is.null(nwrs_obs))
         nwrs_obs <- nwrs_obs %>%
@@ -69,7 +71,7 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
       else
         nwrs_obs <- integer()
 
-      add_obs <- inat_retrieve(i, inat_proj = NULL, verbose = FALSE) %>%
+      add_obs <- try_inat_retrieve(i, inat_proj = NULL, verbose = FALSE) %>%
           mutate(obs_id = as.integer(sub(".*observations/", "", .data$url)))
 
       user_obs <- add_obs %>%
@@ -96,8 +98,9 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
                       grant_type = "password",
                       username = user,
                       password = pw)
-      p_token <- httr::POST(paste0(base_url, "/oauth/token"),
-                            body = payload)
+      try_POST <- try_verb_n(httr::POST)
+      p_token <- try_POST(paste0(base_url, "/oauth/token"),
+                          body = payload)
       token <- httr::content(p_token)$access_token
 
       if (!requireNamespace("pbapply", quietly = TRUE)) {
@@ -108,7 +111,7 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
       ref_out <- pbapply::pblapply(add_obs, function(obs_id) {
         post <- paste0("project_observation[observation_id]=", obs_id,
                        "&project_observation[project_id]=11904")
-        harvest <- httr::POST(paste0(base_url, "/project_observations.json?", post),
+        harvest <- try_POST(paste0(base_url, "/project_observations.json?", post),
                               httr::add_headers(Authorization = paste("Bearer", token)))
         has_error <- httr::http_error(harvest)
         data.frame(orgname = i,
