@@ -6,7 +6,7 @@
 #'  National Wildlife Refuge System project ("usfws-national-wildlife-refuge-system";
 #'  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
 #'  It is strongly advised that this parameter result from running
-#'  \code{\link{find_refuges}} avoid potential mismatches.  See Examples. By
+#'  \code{\link{find_refuges}} to avoid potential mismatches.  See Examples. By
 #'  default (\code{refuge = NULL}), all USFWS properties with boundaries
 #'  in iNaturalist are processed sequentially.
 #' @param user character scalar of iNaturalist username or associated e-mail address
@@ -22,7 +22,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' ### CREATE A MEANINGFUL EXAMPLE
+#' hn <- find_refuges("harris neck")
+#' hn_harvest <- inat_harvest(hn, user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
+#'
+#' # Occasionally observations cannot be harvested because the user restricts their observations.
+#' # If this happens, you will receive a message indicating how many records could not be harvested.
+#' # If some records cannot be harvested, you can explore the reasons for these failures by
+#' # "tabling" the error message column of the object you just created.
+#' # Note that this only makes sense if you get a message about records not harvested
+#' table(hn_harvest$error_msg)
 #' }
 
 inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE) {
@@ -38,7 +46,7 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
       stop("Function is expecting an input string of valid refuge names. ",
            "See `?find_refuges`.")
     if (!any(refuge %in% find_refuges()))
-      stop("At least one refuge is not available for harvest. See `?find_refuges`.")
+      stop("At least one refuge is not recognized. See `?find_refuges`.")
   }
 
   out <- lapply(refuge, function(i) {
@@ -124,7 +132,7 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
 
   if (nrow(out) > 0) {
     message("Failed to harvest ", nrow(out), " observations due to errors.")
-    short <-  grep("Didn't pass rules", out$error_msg)
+    short <- grep("Didn't pass rules", out$error_msg)
     if (!identical(integer(0), short)) out[short, "error_msg"] <- "Didn't pass project rules"
   }
   out
