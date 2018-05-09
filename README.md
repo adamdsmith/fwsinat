@@ -15,18 +15,18 @@ With R and Rtools installed, it's simple to install and load the `fwsinat` packa
 
 **NOTE**: If you receive a SSL or CA Certificate error, you may need to take the extra step documented below.
 
-    # If devtools package is not installed
-    install.packages("devtools", dependencies = TRUE)
+    # If remotes package is not installed
+    install.packages("remotes", dependencies = TRUE)
 
     # Now install and load fwsinat
-    devtools::install_github("adamdsmith/fwsinat")
+    remotes::install_github("adamdsmith/fwsinat")
     library("fwsinat")
 
     # If you receive a SSL or CA Certificate error
     install.packages("httr")
     library("httr")
     set_config(config(ssl_verifypeer = 0L))
-    devtools::install_github("adamdsmith/fwsinat")
+    remotes::install_github("adamdsmith/fwsinat")
     library("fwsinat")
 
 The `fwsinat` package
@@ -106,10 +106,12 @@ dismal <- inat_retrieve(dis)
     ## Processing Great Dismal Swamp National Wildlife Refuge within the
     ## usfws-national-wildlife-refuge-system project.
 
-    ## Retrieving 32 records.
+    ## Retrieving 364 records.
 
     ## Records retrieved: 
-    ##   0-32
+    ##   0-200-364
+
+    ## Warning: package 'bindrcpp' was built under R version 3.4.4
 
 ``` r
 # Get all observations on Great Dismal Swamp NWR
@@ -119,10 +121,10 @@ dismal_all <- inat_retrieve(dis, inat_proj = NULL)
     ## Processing Great Dismal Swamp National Wildlife Refuge across all
     ## iNaturalist projects.
 
-    ## Retrieving 321 records.
+    ## Retrieving 385 records.
 
     ## Records retrieved: 
-    ##   0-200-321
+    ##   0-200-385
 
 **A BRIEF ASIDE**: In our Great Dismal Swamp example, we've retrieved observations only for a single refuge. We can just as easily retrieve observations from multiple refuges. Note that more refuges means more time to wait as they are processed.
 
@@ -142,7 +144,7 @@ Returning to our Great Dismal Swamp example, we notice there are **nearly 300** 
 out <- inat_harvest(dis, user = Sys.getenv("user"), pw = Sys.getenv("pw"), interactive = FALSE)
 ```
 
-    ## 289 observations available for harvest on Great Dismal Swamp National Wildlife Refuge.
+    ## 21 observations available for harvest on Great Dismal Swamp National Wildlife Refuge.
 
     ## Failed to harvest 21 observations due to errors.
 
@@ -157,9 +159,9 @@ head(out)
     ## 1 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091064       TRUE
     ## 2 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091063       TRUE
     ## 3 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091051       TRUE
-    ## 4 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091089       TRUE
-    ## 5 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091092       TRUE
-    ## 6 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091084       TRUE
+    ## 4 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091092       TRUE
+    ## 5 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091084       TRUE
+    ## 6 GREAT DISMAL SWAMP NATIONAL WILDLIFE REFUGE        2091096       TRUE
     ##                                                           error_msg
     ## 1 Submitter does not allow addition to projects they haven't joined
     ## 2 Submitter does not allow addition to projects they haven't joined
@@ -183,10 +185,10 @@ dismal <- inat_retrieve(dis)
     ## Processing Great Dismal Swamp National Wildlife Refuge within the
     ## usfws-national-wildlife-refuge-system project.
 
-    ## Retrieving 300 records.
+    ## Retrieving 364 records.
 
     ## Records retrieved: 
-    ##   0-200-300
+    ##   0-200-364
 
 In Region 4, we want to generate refuge-specific spreadsheets for distribution to the refuges so they have an updated record of biota observed on the property and, if so desired, they can suggest identifications for observations that may not have the desired level of specificity. We generate these spreadsheets with the `inat_export` function. You specify the output directory and `inat_export` generates an output spreadsheet there for each property contained in the input `fwsinat` object.
 
@@ -202,9 +204,7 @@ Since these retrievals and exports are snapshots in time, it would be handy to u
 dismal <- inat_update(dismal)
 ```
 
-    ## Updated 1 existing records.
-
-    ## Added 0 new records.
+    ## No updates available.
 
 In this case, only a single observations has been updated (e.g., another iNaturalist user had suggested an identification) and no new observation have been added. This isn't surprising given the short period between retrieval and update. Normally you'll want to save the record of observations locally and then update them some time later. For example:
 
