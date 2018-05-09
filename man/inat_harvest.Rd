@@ -5,7 +5,9 @@
 \title{Harvest observations outside the USFWS National Wildlife Refuge System
 iNaturalist project for a given property}
 \usage{
-inat_harvest(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE)
+inat_harvest(refuge = NULL,
+  inat_proj = "usfws-national-wildlife-refuge-system", taxon_name = NULL,
+  user = NULL, pw = NULL, interactive = TRUE)
 }
 \arguments{
 \item{refuge}{character string or vector indicating USFWS properties
@@ -16,6 +18,19 @@ It is strongly advised that this parameter result from running
 \code{\link{find_refuges}} to avoid potential mismatches.  See Examples. By
 default (\code{refuge = NULL}), all USFWS properties with boundaries
 in iNaturalist are processed sequentially.}
+
+\item{inat_proj}{character scalar of an iNaturalist project to which observations
+will be added (harvested). This can be a character slug or group ID. Default is
+to harvest observations on the \code{refuge} properties to the the USFWS National
+Wildlife Refuge System project ("usfws-national-wildlife-refuge-system";
+\url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).}
+
+\item{taxon_name}{character scalar. Retrieve only observations associated with
+\code{taxon_name}. This also retrieves descendant taxa. This can greatly reduce
+harvesting time, and may be most useful harvest to projects for specific taxa
+(e.g., harvesting only 'Apoidea' observations to a bee and wasp project). Note
+if \code{taxon_name} is ambiguous and matches multiple taxa, no observations may
+be retrieved.}
 
 \item{user}{character scalar of iNaturalist username or associated e-mail address}
 
@@ -36,6 +51,7 @@ iNaturalist project for a given property
 }
 \examples{
 \dontrun{
+# Harvest to the default USFWS NWRS project
 hn <- find_refuges("harris neck")
 hn_harvest <- inat_harvest(hn, user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
 
@@ -45,5 +61,10 @@ hn_harvest <- inat_harvest(hn, user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
 # "tabling" the error message column of the object you just created.
 # Note that this only makes sense if you get a message about records not harvested
 table(hn_harvest$error_msg)
+
+# Harvest to the USFWS NWRS Bee and Wasp project
+hn <- find_refuges("harris neck")
+hn_harvest <- inat_harvest(hn, inat_proj = "usfws-national-wildlife-refuge-system-bees-wasps",
+                           taxon_name = "Apoidea", user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
 }
 }

@@ -9,6 +9,17 @@
 #'  \code{\link{find_refuges}} to avoid potential mismatches.  See Examples. By
 #'  default (\code{refuge = NULL}), all USFWS properties with boundaries
 #'  in iNaturalist are processed sequentially.
+#' @param inat_proj character scalar of an iNaturalist project to which observations
+#'  will be added (harvested). This can be a character slug or group ID. Default is
+#'  to harvest observations on the \code{refuge} properties to the the USFWS National
+#'  Wildlife Refuge System project ("usfws-national-wildlife-refuge-system";
+#'  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
+#' @param taxon_name character scalar. Retrieve only observations associated with
+#'  \code{taxon_name}. This also retrieves descendant taxa. This can greatly reduce
+#'  harvesting time, and may be most useful harvest to projects for specific taxa
+#'  (e.g., harvesting only 'Apoidea' observations to a bee and wasp project). Note
+#'  if \code{taxon_name} is ambiguous and matches multiple taxa, no observations may
+#'  be retrieved.
 #' @param user character scalar of iNaturalist username or associated e-mail address
 #' @param pw character scalar of iNaturalist password
 #' @param interactive if \code{TRUE}, the default, the user is prompted to proceed
@@ -22,6 +33,7 @@
 #' @export
 #' @examples
 #' \dontrun{
+#' # Harvest to the default USFWS NWRS project
 #' hn <- find_refuges("harris neck")
 #' hn_harvest <- inat_harvest(hn, user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
 #'
@@ -31,13 +43,28 @@
 #' # "tabling" the error message column of the object you just created.
 #' # Note that this only makes sense if you get a message about records not harvested
 #' table(hn_harvest$error_msg)
+#'
+#' # Harvest to the USFWS NWRS Bee and Wasp project
+#' hn <- find_refuges("harris neck")
+#' hn_harvest <- inat_harvest(hn, inat_proj = "usfws-national-wildlife-refuge-system-bees-wasps",
+#'                            taxon_name = "Apoidea", user = "YOUR_USER_NAME", pw = "YOUR_PASSWORD")
 #' }
 
-inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TRUE) {
+inat_harvest <- function(refuge = NULL, inat_proj = "usfws-national-wildlife-refuge-system",
+                         taxon_name = NULL, user = NULL, pw = NULL, interactive = TRUE) {
 
   reqs <- list(user, pw)
   if (any(sapply(reqs, function(i) is.null(i) | !is.character(i))))
     stop("You must supply an iNaturalist username and password.")
+
+  # Check project input
+  proj_url <- paste0("http://www.inaturalist.org/projects/", inat_proj, ".json")
+  try_GET <- try_verb_n(httr::GET)
+  proj_req <- try_GET(proj_url)
+  if (httr::http_error(proj_req))
+    stop("Problem identifying project information.\n   ",
+         paste(unlist(httr::content(proj_req)$error), collapse = "; "))
+  proj_id <- jsonlite::fromJSON(httr::content(proj_req, as = "text"))$id
 
   # Check refuge input
   if (is.null(refuge)) refuge <- find_refuges()
@@ -57,31 +84,34 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
 
     # Check necessity of harvest before pulling observations
     try_GET_inat <- try_verb_n(GET_inat)
-    nwrs_obs <- try_GET_inat(place_id, nrecs_only = TRUE, verbose = FALSE)
-    all_obs <- try_GET_inat(place_id, proj = NULL, nrecs_only = TRUE, verbose = FALSE)
+    proj_obs <- try_GET_inat(place_id, proj = inat_proj, taxon_name = taxon_name,
+                             nrecs_only = TRUE, verbose = FALSE)
+    all_obs <- try_GET_inat(place_id, proj = NULL, taxon_name = taxon_name,
+                            nrecs_only = TRUE, verbose = FALSE)
 
-    if (all_obs > nwrs_obs) {
+    if (all_obs > proj_obs) {
       try_inat_retrieve <- try_verb_n(inat_retrieve)
-      nwrs_obs <- try_inat_retrieve(i, verbose = FALSE)
+      proj_obs <- try_inat_retrieve(i, inat_proj = inat_proj, taxon_name = taxon_name, verbose = FALSE)
 
-      if (!is.null(nwrs_obs))
-        nwrs_obs <- nwrs_obs %>%
+      if (!is.null(proj_obs))
+        proj_obs <- proj_obs %>%
           mutate(obs_id = as.integer(sub(".*observations/", "", .data$url))) %>%
           pull(.data$obs_id)
       else
-        nwrs_obs <- integer()
+        proj_obs <- integer()
 
-      add_obs <- try_inat_retrieve(i, inat_proj = NULL, verbose = FALSE) %>%
+      add_obs <- try_inat_retrieve(i, inat_proj = NULL, taxon_name = taxon_name, verbose = FALSE) %>%
           mutate(obs_id = as.integer(sub(".*observations/", "", .data$url)))
 
       user_obs <- add_obs %>%
         select(.data$obs_id, .data$user)
 
-      add_obs <- add_obs %>% pull(.data$obs_id) %>% setdiff(nwrs_obs)
+      add_obs <- add_obs %>% pull(.data$obs_id) %>% setdiff(proj_obs)
 
     } else add_obs <- integer(0)
 
-    message(length(add_obs), " observations available for harvest on ", ref_name, ".")
+    message(length(add_obs), ifelse(is.null(taxon_name), "", paste0(" ", taxon_name)),
+            " observations available for harvest on ", ref_name, ".")
     if (length(add_obs)) {
       if (interactive) {
         message("Do you want to proceed?")
@@ -110,7 +140,7 @@ inat_harvest <- function(refuge = NULL, user = NULL, pw = NULL, interactive = TR
 
       ref_out <- pbapply::pblapply(add_obs, function(obs_id) {
         post <- paste0("project_observation[observation_id]=", obs_id,
-                       "&project_observation[project_id]=11904")
+                       "&project_observation[project_id]=", proj_id)
         harvest <- try_POST(paste0(base_url, "/project_observations.json?", post),
                               httr::add_headers(Authorization = paste("Bearer", token)))
         has_error <- httr::http_error(harvest)

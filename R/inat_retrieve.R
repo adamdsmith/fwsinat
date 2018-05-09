@@ -20,6 +20,9 @@
 #'  \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
 #'  Another potentially useful option is to retrieve all available iNaturalist records
 #'  on the property using (\code{inat_proj = NULL})
+#' @param taxon_name character scalar. Retrieve only observations associated with
+#'  \code{taxon_name}. This also retrieves descendant taxa. Note if \code{taxon_name} is
+#'  ambiguous and matches multiple taxa, no observations may be retrieved.
 #' @param d1 First date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-01").
 #'  Specifying only \code{d1} returns all records on and after \code{d1}.
 #' @param d2 Last date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-31").
@@ -61,7 +64,7 @@
 
 inat_retrieve <- function(refuge = NULL,
                           inat_proj = "usfws-national-wildlife-refuge-system",
-                          d1 = NULL, d2 = NULL, since_date = NULL,
+                          taxon_name = NULL, d1 = NULL, d2 = NULL, since_date = NULL,
                           multipart = FALSE, verbose = TRUE) {
 
   # Check refuge input
@@ -89,10 +92,12 @@ inat_retrieve <- function(refuge = NULL,
     else
       proj_status <- paste(" within the", inat_proj, "project.")
 
-    if (verbose) message(wrap_text("Processing ", ref_name, proj_status))
+    if (verbose) message(wrap_text("Retrieving",
+                                   ifelse(is.null(taxon_name), "", taxon_name),
+                                   " observations on ", ref_name, proj_status))
 
     # Retrieve observations for this request and inform of problem if too many
-    n_recs <- GET_inat(place_id, inat_proj, d1, d2, since_date, TRUE, verbose)
+    n_recs <- GET_inat(place_id, inat_proj, taxon_name, d1, d2, since_date, TRUE, verbose)
 
     # Now get observations
     if (n_recs > 10000) {
@@ -105,7 +110,7 @@ inat_retrieve <- function(refuge = NULL,
       if (ans == "n") invisible(return(NULL))
     }
 
-    obs <- GET_inat(place_id, inat_proj, d1, d2, since_date, FALSE, verbose)
+    obs <- GET_inat(place_id, inat_proj, taxon_name, d1, d2, since_date, FALSE, verbose)
 
     if (is.null(obs)) return(obs)
 

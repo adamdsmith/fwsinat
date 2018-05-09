@@ -5,8 +5,9 @@
 \title{Retrieve iNaturalist observations on USFWS properties}
 \usage{
 inat_retrieve(refuge = NULL,
-  inat_proj = "usfws-national-wildlife-refuge-system", d1 = NULL,
-  d2 = NULL, since_date = NULL, multipart = FALSE, verbose = TRUE)
+  inat_proj = "usfws-national-wildlife-refuge-system", taxon_name = NULL,
+  d1 = NULL, d2 = NULL, since_date = NULL, multipart = FALSE,
+  verbose = TRUE)
 }
 \arguments{
 \item{refuge}{character scalar or vector indicating USFWS properties
@@ -22,6 +23,10 @@ with the USFWS National Wildlife Refuge System project
 \url{http://www.inaturalist.org/projects/usfws-national-wildlife-refuge-system}).
 Another potentially useful option is to retrieve all available iNaturalist records
 on the property using (\code{inat_proj = NULL})}
+
+\item{taxon_name}{character scalar. Retrieve only observations associated with
+\code{taxon_name}. This also retrieves descendant taxa. Note if \code{taxon_name} is
+ambiguous and matches multiple taxa, no observations may be retrieved.}
 
 \item{d1}{First date of a date range as string in the form yyyy-mm-dd (e.g. "2017-07-01").
 Specifying only \code{d1} returns all records on and after \code{d1}.}

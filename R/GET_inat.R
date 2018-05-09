@@ -1,14 +1,16 @@
 GET_inat <- function (place_id, proj = "usfws-national-wildlife-refuge-system",
-                      d1 = NULL, d2 = NULL, since_date = NULL, nrecs_only = FALSE,
-                      verbose) {
+                      taxon_name = NULL, d1 = NULL, d2 = NULL, since_date = NULL,
+                      nrecs_only = FALSE, verbose) {
 
   # Set up filters
   place_id <- paste0("place_id=", place_id)
   if (!is.null(proj)) proj <- paste0("projects%5B%5D=", proj)
   if (!is.null(d1)) d1 <- paste0("d1=", d1)
   if (!is.null(d2)) d2 <- paste0("d2=", d2)
+  if (!is.null(taxon_name)) taxon_name <- paste0("taxon_name=",
+                                                 gsub(" ", "+", taxon_name))
   if (!is.null(since_date)) since_date <- paste0("updated_since=", since_date)
-  search <- paste(c("", place_id, proj, d1, d2, since_date), collapse = "&")
+  search <- paste(c("", place_id, proj, d1, d2, taxon_name, since_date), collapse = "&")
 
   # Ping records
   base_url <- "http://www.inaturalist.org/observations"
