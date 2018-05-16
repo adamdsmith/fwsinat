@@ -1,15 +1,15 @@
 #' Find refuges or properties available for query.
 #'
 #' @param refuge character string scalar or vector (i.e., multiple entries allowed and
-#'  regular expressions allowed) with
-#'  which to search and return valid refuge identifiers for use with
-#'  \code{\link{inat_retrieve}}. Default (`NULL`) returns all available refuges.
-#'  Case-insensitive search. Regular expressions allowed. See Examples.
+#'  regular expressions allowed) with which to search and return valid refuge or hatchery
+#'  identifiers for use with \code{\link{inat_retrieve}}. Default (`NULL`) returns all
+#'  available National Wildlife Refuges (see \code{ptype} argument.  Case-insensitive
+#'  search. Regular expressions allowed. See Examples.
 #' @param ptype character string scalar or vector of types of USFWS properties to search.
 #'  Default is to search all property types.  Other viable options include National Wildlife
-#'  Refuges only (`ptype = "NWR"`), "WMD" (Wetland Managment District), "WMA" (Wildlife
-#'  Management Area), and WPA" (Waterfowl Production Area).  Multiple options are
-#'  permissible.
+#'  Refuges only \code{ptype} = "NWR", "NFH" (National Fish Hatchery; southeast region only
+#'  at the moment), "WMD" (Wetland Managment District), "WMA" (Wildlife Management Area),
+#'  and WPA" (Waterfowl Production Area).  Multiple options are permissible.
 #' @param region integer vector indicating which USFWS Region to search; see
 #'  \url{https://www.fws.gov/where}; valid values range from 1 to 8
 #'
@@ -40,10 +40,10 @@
 #' }
 
 find_refuges <- function(refuge = NULL,
-                         ptype = c("NWR", "WMD", "WMA", "WPA"),
+                         ptype = c("NWR", "NFH", "WMD", "WMA", "WPA"),
                          region = 1:8L) {
 
-  if (!any(ptype %in% c("NWR", "WMD", "WMA", "WPA")))
+  if (!any(ptype %in% c("NWR", "NFH", "WMD", "WMA", "WPA")))
     stop("Unknown property type (`ptype`).\n",
          "See available options in `?find_refuges`.")
 
@@ -64,7 +64,7 @@ find_refuges <- function(refuge = NULL,
         NULL
       } else sort(ref$orgname)
     })
-    if (is.null(unlist(refs))) stop("No refuges matched your search criteria.")
+    if (is.null(unlist(refs))) stop("No properties matched your search criteria.")
     return(unlist(refs))
   }
 }

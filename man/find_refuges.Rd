@@ -4,21 +4,21 @@
 \alias{find_refuges}
 \title{Find refuges or properties available for query.}
 \usage{
-find_refuges(refuge = NULL, ptype = c("NWR", "WMD", "WMA", "WPA"),
+find_refuges(refuge = NULL, ptype = c("NWR", "NFH", "WMD", "WMA", "WPA"),
   region = 1:8L)
 }
 \arguments{
 \item{refuge}{character string scalar or vector (i.e., multiple entries allowed and
-regular expressions allowed) with
-which to search and return valid refuge identifiers for use with
-\code{\link{inat_retrieve}}. Default (`NULL`) returns all available refuges.
-Case-insensitive search. Regular expressions allowed. See Examples.}
+regular expressions allowed) with which to search and return valid refuge or hatchery
+identifiers for use with \code{\link{inat_retrieve}}. Default (`NULL`) returns all
+available National Wildlife Refuges (see \code{ptype} argument.  Case-insensitive
+search. Regular expressions allowed. See Examples.}
 
 \item{ptype}{character string scalar or vector of types of USFWS properties to search.
 Default is to search all property types.  Other viable options include National Wildlife
-Refuges only (`ptype = "NWR"`), "WMD" (Wetland Managment District), "WMA" (Wildlife
-Management Area), and WPA" (Waterfowl Production Area).  Multiple options are
-permissible.}
+Refuges only \code{ptype} = "NWR", "NFH" (National Fish Hatchery; southeast region only
+at the moment), "WMD" (Wetland Managment District), "WMA" (Wildlife Management Area),
+and WPA" (Waterfowl Production Area).  Multiple options are permissible.}
 
 \item{region}{integer vector indicating which USFWS Region to search; see
 \url{https://www.fws.gov/where}; valid values range from 1 to 8}
