@@ -9,7 +9,7 @@
 #'  Default is to search all property types.  Other viable options include National Wildlife
 #'  Refuges only \code{ptype} = "NWR", "NFH" (National Fish Hatchery; southeast region only
 #'  at the moment), "WMD" (Wetland Managment District), "WMA" (Wildlife Management Area),
-#'  and WPA" (Waterfowl Production Area).  Multiple options are permissible.
+#'  and WPA" (Waterfowl Production Area).  Any combination of options is permissible.
 #' @param region integer vector indicating which USFWS Region to search; see
 #'  \url{https://www.fws.gov/where}; valid values range from 1 to 8
 #'

@@ -11,7 +11,7 @@
 #' @param refuge character scalar or vector indicating USFWS properties
 #'  on which to retrieve iNaturalist observations.  It is strongly advised that
 #'  the input for this parameter result from running \code{\link{find_refuges}} to
-#'  avoid potential mismatches.  See examples. By default, all 500+ USFWS
+#'  avoid potential mismatches.  See examples. By default, all 570+ USFWS
 #'  properties with boundaries in iNaturalist are used.
 #' @param inat_proj character scalar of an iNaturalist project as an iNaturalist
 #'  slug or group ID. Default is to retrieve all records on the property associated
