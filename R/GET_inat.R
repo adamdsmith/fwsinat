@@ -41,7 +41,7 @@ GET_inat <- function (place_id, proj = "usfws-national-wildlife-refuge-system",
     q_url <- paste0(base_url, query_path)
     q_dat <- utils::read.csv(q_url, stringsAsFactors = FALSE, encoding = "UTF-8") %>%
       # Get rid of some unnecessary and occasionally problem-causing columns
-      select(-tag_list)
+      select(-.data$tag_list)
     dat <- bind_rows(dat, q_dat)
     if (verbose) {
       if (i %% 16 == 0) cat("\n ", nrow(dat)) else cat(paste0("-", nrow(dat)))
