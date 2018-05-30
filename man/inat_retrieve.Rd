@@ -44,7 +44,8 @@ is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the c
 system time is recorded as the the \code{query_dt} attribute of the resulting
 \code{fwsinat} object rather than \code{d2}, if specified.}
 
-\item{verbose}{logical (default \code{TRUE}); print informative messages?}
+\item{verbose}{logical (default \code{TRUE}); print informative messages? If not, a
+progress bar is supplied.}
 }
 \value{
 \code{fwsinat} object (essentially a \code{data.frame} with a few additional

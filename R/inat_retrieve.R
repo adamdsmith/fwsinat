@@ -35,7 +35,8 @@
 #'  is part of multiple retrievals to obtain > 10000 records.  If \code{TRUE}, the current
 #'  system time is recorded as the the \code{query_dt} attribute of the resulting
 #'  \code{fwsinat} object rather than \code{d2}, if specified.
-#' @param verbose logical (default \code{TRUE}); print informative messages?
+#' @param verbose logical (default \code{TRUE}); print informative messages? If not, a
+#'  progress bar is supplied.
 #'
 #' @return \code{fwsinat} object (essentially a \code{data.frame} with a few additional
 #'  attributes) of iNaturalist observations associated with the supplied \code{refuge}(s)
@@ -81,7 +82,17 @@ inat_retrieve <- function(refuge = NULL,
   q_dt <- Sys.time()
   if (!is.null(d2) && !multipart) q_dt <- min(q_dt, as.POSIXct(as.Date(d2)))
 
-  obs <- lapply(refuge, function(i) {
+  if (verbose)
+    lapp_fun <- lapply
+  else {
+    if (!requireNamespace("pbapply", quietly = TRUE)) {
+      message("The pbapply package is needed and will be installed.")
+      utils::install.packages("pbapply", quiet = TRUE, verbose = FALSE)
+    }
+    lapp_fun <- pbapply::pblapply
+  }
+
+  obs <- lapp_fun(refuge, function(i) {
     r <- utils::read.csv(system.file("extdata", "fws_place_ids.csv", package = "fwsinat"),
                          stringsAsFactors = FALSE)
     ref_name <- r[r$orgname == i, "name"]
