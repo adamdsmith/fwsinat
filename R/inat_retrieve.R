@@ -165,6 +165,7 @@ inat_retrieve <- function(refuge = NULL,
 
   class(obs) <- c("fwsinat", class(obs))
   attr(obs, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
+  attr(obs, "fws_props") <- refuge
   attr(obs, "query_dt") <- q_dt
 
   obs

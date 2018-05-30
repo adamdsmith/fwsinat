@@ -34,14 +34,12 @@ inat_update <- function(fwsinat) {
   since_date <- format(old_q_dt, format = "%Y-%m-%dT%H:%M:%SZ")
   inat_proj <- attr(fwsinat, "inat_proj")
   if (inat_proj == "all") inat_proj <- NULL
-  refuge <- sort(unique(fwsinat$orgname))
+  refuge <- attr(fwsinat, "fws_props")
 
   q_dt <- Sys.time()
-  upd_dat <- lapply(refuge, function(i) {
-    inat_retrieve(i, inat_proj, since_date = since_date, verbose = FALSE)
-  })
 
-  upd_dat <- bind_rows(upd_dat)
+  message("Checking ", length(refuge), " USFWS properties for iNaturalist observation updates.")
+  upd_dat <- inat_retrieve(refuge, inat_proj, since_date = since_date, verbose = FALSE)
 
   if (identical(upd_dat, tibble())) {
     attr(fwsinat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)

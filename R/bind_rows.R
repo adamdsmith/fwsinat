@@ -19,9 +19,12 @@ bind_rows <- function(...) {
   if (all(is_fwsinats)) {
     projs <- lapply(fwsinats, function(i) attr(i, "inat_proj")) %>%
       unlist() %>% unique()
+    props <- lapply(fwsinats, function(i) attr(i, "fws_props")) %>%
+      unlist() %>% unique()
     dts <- lapply(fwsinats, function(i) attr(i, "query_dt"))
     dt <- dts[[which.min(unlist(dts))]]
     attr(r, "inat_proj") <- projs
+    attr(r, "fws_props") <- props
     attr(r, "query_dt") <- dt
   } else if (any(is_fwsinats)) {
     message('Some non-fwsinat objects.  Reverting to dplyr::bind_rows')
