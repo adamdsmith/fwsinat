@@ -41,7 +41,7 @@ inat_update <- function(fwsinat) {
   message("Checking ", length(refuge), " USFWS properties for iNaturalist observation updates.")
   upd_dat <- inat_retrieve(refuge, inat_proj, since_date = since_date, verbose = FALSE)
 
-  if (identical(upd_dat, tibble())) {
+  if (is.null(upd_dat)) {
     attr(fwsinat, "inat_proj") <- ifelse(is.null(inat_proj), "all", inat_proj)
     attr(fwsinat, "query_dt") <- q_dt
     message("No updates available.")
